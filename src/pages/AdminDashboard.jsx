@@ -309,11 +309,8 @@ export default function AdminDashboard() {
 
               {requestState.status === 'APPROVED' && requestState.from === activeDepot && (
                 <div className="recommendation-card" style={{ borderLeft: '4px solid #10b981' }}>
-                  <h4>Madurai Request Accepted!</h4>
+                  <h4 style={{ color: '#10b981' }} className="flex items-center gap-2"><CheckCircle size={18}/> Madurai Request Accepted!</h4>
                   <p className="text-secondary text-sm mt-2">All 30 buses en route.</p>
-                  <button className="btn-primary w-full mt-4" style={{ background: '#f1f5f9', color: '#0f172a', border: '1px solid #cbd5e1', boxShadow: 'none' }} onClick={() => updateRequest({ status: 'IDLE', to: '', from: '', rejectReason: '' })}>
-                    Start New Request (Reset)
-                  </button>
                 </div>
               )}
 
@@ -327,9 +324,6 @@ export default function AdminDashboard() {
                     <p className="text-sm text-secondary">Salem has free idle buses.</p>
                     <button className="btn-primary w-full mt-2" onClick={handleBackupRequest} style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
                       Request Salem (SLM)
-                    </button>
-                    <button className="btn-primary w-full mt-2" style={{ background: '#f1f5f9', color: '#0f172a', border: '1px solid #cbd5e1', boxShadow: 'none' }} onClick={() => updateRequest({ status: 'IDLE', to: '', from: '', rejectReason: '' })}>
-                      Cancel & Reset
                     </button>
                   </div>
                 </div>
