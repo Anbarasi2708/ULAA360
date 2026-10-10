@@ -1,0 +1,41 @@
+Parent_Corporation,Regional_Division,Subdivision_Depot,Bus_Registration_Number,Bus_Type,Route_ID,Origin_Bus_Stand,Destination_Bus_Stand,Departure_Time,Arrival_Time,Frequency_Type
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-5908,Mofussil (Express),TIR-100,Christopher BS Nagercoil,Venkatanathapuram BS,20:45,23:30,Every 30 Mins
+TNSTC Tirunelveli,Nagercoil,Ranithottam Depot,TN-74-N-3882,Town Bus (Ordinary),TIR-101,Venkatanathapuram BS,Thoothukudi New BS,20:30,23:45,Every 20 Mins
+TNSTC Tirunelveli,Thoothukudi,Thoothukudi City Depot,TN-69-N-1957,Point-to-Point Deluxe,TIR-102,Thoothukudi New BS,Tenkasi BS,18:45,22:45,Peak Hours Only
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-2862,Ultra Deluxe,TIR-103,Venkatanathapuram BS,Christopher BS Nagercoil,16:30,17:30,Weekends
+TNSTC Tirunelveli,Nagercoil,Ranithottam Depot,TN-74-N-6289,Point-to-Point Deluxe,TIR-104,Tenkasi BS,Christopher BS Nagercoil,22:45,00:45,Every 20 Mins
+TNSTC Tirunelveli,Thoothukudi,Thoothukudi City Depot,TN-69-N-2213,Mofussil (Express),TIR-105,Tenkasi BS,Christopher BS Nagercoil,06:45,08:15,Daily
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-9980,Point-to-Point Deluxe,TIR-106,Thoothukudi New BS,Tenkasi BS,10:00,12:45,Peak Hours Only
+TNSTC Tirunelveli,Nagercoil,Ranithottam Depot,TN-74-N-9957,Town Bus (Ordinary),TIR-107,Thoothukudi New BS,Venkatanathapuram BS,12:15,13:00,Every 30 Mins
+TNSTC Tirunelveli,Thoothukudi,Thoothukudi City Depot,TN-69-N-5960,Mofussil (Express),TIR-108,Tenkasi BS,Christopher BS Nagercoil,13:30,14:00,Weekends
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-5253,Mofussil (Express),TIR-109,Venkatanathapuram BS,Christopher BS Nagercoil,18:30,22:30,Weekends
+TNSTC Tirunelveli,Nagercoil,Ranithottam Depot,TN-74-N-9445,Ultra Deluxe,TIR-110,Christopher BS Nagercoil,Tenkasi BS,06:30,10:00,Every 30 Mins
+TNSTC Tirunelveli,Thoothukudi,Thoothukudi City Depot,TN-69-N-8370,Ultra Deluxe,TIR-111,Thoothukudi New BS,Christopher BS Nagercoil,21:00,01:15,Daily
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-6086,Point-to-Point Deluxe,TIR-112,Thoothukudi New BS,Venkatanathapuram BS,15:15,19:45,Peak Hours Only
+TNSTC Tirunelveli,Nagercoil,Ranithottam Depot,TN-74-N-3748,Town Bus (Ordinary),TIR-113,Tenkasi BS,Venkatanathapuram BS,09:30,12:00,Every 30 Mins
+TNSTC Tirunelveli,Thoothukudi,Thoothukudi City Depot,TN-69-N-8821,Mofussil (Express),TIR-114,Thoothukudi New BS,Christopher BS Nagercoil,17:00,18:45,Every 20 Mins
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-4465,Town Bus (Ordinary),TIR-115,Thoothukudi New BS,Tenkasi BS,14:15,16:45,Every 30 Mins
+TNSTC Tirunelveli,Nagercoil,Ranithottam Depot,TN-74-N-1759,Mofussil (Express),TIR-116,Thoothukudi New BS,Christopher BS Nagercoil,20:45,22:30,Peak Hours Only
+TNSTC Tirunelveli,Thoothukudi,Thoothukudi City Depot,TN-69-N-8043,Town Bus (Ordinary),TIR-117,Christopher BS Nagercoil,Venkatanathapuram BS,21:00,23:45,Every 20 Mins
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-5197,Ultra Deluxe,TIR-118,Thoothukudi New BS,Christopher BS Nagercoil,21:15,01:30,Every 30 Mins
+TNSTC Tirunelveli,Nagercoil,Ranithottam Depot,TN-74-N-6532,Town Bus (Ordinary),TIR-119,Venkatanathapuram BS,Thoothukudi New BS,22:15,00:15,Every 30 Mins
+TNSTC Tirunelveli,Thoothukudi,Thoothukudi City Depot,TN-69-N-6157,Point-to-Point Deluxe,TIR-120,Christopher BS Nagercoil,Tenkasi BS,10:45,11:15,Daily
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-4468,Point-to-Point Deluxe,TIR-121,Tenkasi BS,Christopher BS Nagercoil,14:45,15:30,Daily
+TNSTC Tirunelveli,Nagercoil,Ranithottam Depot,TN-74-N-4753,Point-to-Point Deluxe,TIR-122,Tenkasi BS,Venkatanathapuram BS,18:15,19:45,Daily
+TNSTC Tirunelveli,Thoothukudi,Thoothukudi City Depot,TN-69-N-1403,Point-to-Point Deluxe,TIR-123,Venkatanathapuram BS,Christopher BS Nagercoil,08:45,09:30,Every 30 Mins
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-9996,Ultra Deluxe,TIR-124,Venkatanathapuram BS,Thoothukudi New BS,05:00,07:45,Every 20 Mins
+TNSTC Tirunelveli,Nagercoil,Ranithottam Depot,TN-74-N-8761,Point-to-Point Deluxe,TIR-125,Tenkasi BS,Christopher BS Nagercoil,22:00,23:15,Weekends
+TNSTC Tirunelveli,Thoothukudi,Thoothukudi City Depot,TN-69-N-2108,Mofussil (Express),TIR-126,Venkatanathapuram BS,Tenkasi BS,16:15,20:15,Every 30 Mins
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-8499,Point-to-Point Deluxe,TIR-127,Thoothukudi New BS,Venkatanathapuram BS,07:30,10:45,Every 30 Mins
+TNSTC Tirunelveli,Nagercoil,Ranithottam Depot,TN-74-N-9003,Point-to-Point Deluxe,TIR-128,Venkatanathapuram BS,Christopher BS Nagercoil,15:15,16:45,Every 30 Mins
+TNSTC Tirunelveli,Thoothukudi,Thoothukudi City Depot,TN-69-N-3412,Point-to-Point Deluxe,TIR-129,Tenkasi BS,Thoothukudi New BS,08:15,12:45,Every 30 Mins
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-1355,Mofussil (Express),TIR-130,Christopher BS Nagercoil,Venkatanathapuram BS,21:45,22:30,Daily
+TNSTC Tirunelveli,Nagercoil,Ranithottam Depot,TN-74-N-1200,Ultra Deluxe,TIR-131,Venkatanathapuram BS,Tenkasi BS,15:00,19:45,Daily
+TNSTC Tirunelveli,Thoothukudi,Thoothukudi City Depot,TN-69-N-6034,Town Bus (Ordinary),TIR-132,Tenkasi BS,Christopher BS Nagercoil,16:00,20:30,Weekends
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-3416,Ultra Deluxe,TIR-133,Tenkasi BS,Christopher BS Nagercoil,19:15,20:15,Daily
+TNSTC Tirunelveli,Nagercoil,Ranithottam Depot,TN-74-N-5539,Point-to-Point Deluxe,TIR-134,Christopher BS Nagercoil,Tenkasi BS,21:30,00:15,Every 20 Mins
+TNSTC Tirunelveli,Thoothukudi,Thoothukudi City Depot,TN-69-N-3750,Mofussil (Express),TIR-135,Tenkasi BS,Venkatanathapuram BS,16:15,19:15,Daily
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-3280,Town Bus (Ordinary),TIR-136,Venkatanathapuram BS,Tenkasi BS,05:45,08:00,Every 30 Mins
+TNSTC Tirunelveli,Nagercoil,Ranithottam Depot,TN-74-N-7576,Mofussil (Express),TIR-137,Tenkasi BS,Thoothukudi New BS,13:15,14:45,Every 30 Mins
+TNSTC Tirunelveli,Thoothukudi,Thoothukudi City Depot,TN-69-N-1409,Town Bus (Ordinary),TIR-138,Christopher BS Nagercoil,Venkatanathapuram BS,11:45,13:00,Every 30 Mins
+TNSTC Tirunelveli,Tirunelveli,Venkatanathapuram Depot,TN-72-N-1999,Mofussil (Express),TIR-139,Christopher BS Nagercoil,Thoothukudi New BS,15:15,19:15,Peak Hours Only

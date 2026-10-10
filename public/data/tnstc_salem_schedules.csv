@@ -1,0 +1,41 @@
+Parent_Corporation,Regional_Division,Subdivision_Depot,Bus_Registration_Number,Bus_Type,Route_ID,Origin_Bus_Stand,Destination_Bus_Stand,Departure_Time,Arrival_Time,Frequency_Type
+TNSTC Salem,Dharmapuri,Dharmapuri Main,TN-29-N-7242,Town Bus (Ordinary),SAL-100,Dharmapuri BS,Mettur BS,17:00,20:00,Weekends
+TNSTC Salem,Salem,Salem Central-1,TN-30-N-1844,Point-to-Point Deluxe,SAL-101,Dharmapuri BS,Mettur BS,09:15,12:30,Every 30 Mins
+TNSTC Salem,Dharmapuri,Hosur Depot,TN-29-N-6656,Town Bus (Ordinary),SAL-102,Hosur Integrated BS,Salem Central BS,08:45,12:45,Every 20 Mins
+TNSTC Salem,Salem,Mettur Rural,TN-30-N-2965,Point-to-Point Deluxe,SAL-103,Dharmapuri BS,Salem Central BS,14:00,18:45,Every 20 Mins
+TNSTC Salem,Dharmapuri,Dharmapuri Main,TN-29-N-3181,Point-to-Point Deluxe,SAL-104,Dharmapuri BS,Salem Central BS,17:15,18:00,Daily
+TNSTC Salem,Salem,Salem Central-1,TN-30-N-1425,Town Bus (Ordinary),SAL-105,Salem Central BS,Mettur BS,16:15,18:00,Every 30 Mins
+TNSTC Salem,Dharmapuri,Hosur Depot,TN-29-N-9160,Town Bus (Ordinary),SAL-106,Dharmapuri BS,Hosur Integrated BS,09:15,11:45,Every 30 Mins
+TNSTC Salem,Salem,Mettur Rural,TN-30-N-7933,Mofussil (Express),SAL-107,Hosur Integrated BS,Salem Central BS,09:30,13:45,Peak Hours Only
+TNSTC Salem,Dharmapuri,Dharmapuri Main,TN-29-N-6588,Point-to-Point Deluxe,SAL-108,Salem Central BS,Mettur BS,18:30,20:30,Every 20 Mins
+TNSTC Salem,Salem,Salem Central-1,TN-30-N-1542,Ultra Deluxe,SAL-109,Dharmapuri BS,Mettur BS,11:15,15:30,Daily
+TNSTC Salem,Dharmapuri,Hosur Depot,TN-29-N-7933,Mofussil (Express),SAL-110,Dharmapuri BS,Hosur Integrated BS,16:45,19:00,Weekends
+TNSTC Salem,Salem,Mettur Rural,TN-30-N-4746,Point-to-Point Deluxe,SAL-111,Dharmapuri BS,Hosur Integrated BS,06:45,09:15,Daily
+TNSTC Salem,Dharmapuri,Dharmapuri Main,TN-29-N-2291,Mofussil (Express),SAL-112,Mettur BS,Dharmapuri BS,17:00,19:30,Peak Hours Only
+TNSTC Salem,Salem,Salem Central-1,TN-30-N-5618,Mofussil (Express),SAL-113,Dharmapuri BS,Salem Central BS,18:30,20:00,Daily
+TNSTC Salem,Dharmapuri,Hosur Depot,TN-29-N-1239,Point-to-Point Deluxe,SAL-114,Salem Central BS,Hosur Integrated BS,08:45,11:45,Daily
+TNSTC Salem,Salem,Mettur Rural,TN-30-N-1772,Town Bus (Ordinary),SAL-115,Hosur Integrated BS,Mettur BS,13:45,16:30,Every 30 Mins
+TNSTC Salem,Dharmapuri,Dharmapuri Main,TN-29-N-9915,Mofussil (Express),SAL-116,Dharmapuri BS,Salem Central BS,13:45,16:00,Every 20 Mins
+TNSTC Salem,Salem,Salem Central-1,TN-30-N-4432,Mofussil (Express),SAL-117,Hosur Integrated BS,Salem Central BS,18:45,21:15,Daily
+TNSTC Salem,Dharmapuri,Hosur Depot,TN-29-N-5131,Point-to-Point Deluxe,SAL-118,Dharmapuri BS,Mettur BS,15:15,16:00,Weekends
+TNSTC Salem,Salem,Mettur Rural,TN-30-N-2878,Mofussil (Express),SAL-119,Mettur BS,Dharmapuri BS,22:45,01:30,Daily
+TNSTC Salem,Dharmapuri,Dharmapuri Main,TN-29-N-8250,Point-to-Point Deluxe,SAL-120,Salem Central BS,Hosur Integrated BS,11:15,13:15,Peak Hours Only
+TNSTC Salem,Salem,Salem Central-1,TN-30-N-7903,Point-to-Point Deluxe,SAL-121,Mettur BS,Salem Central BS,21:30,23:15,Peak Hours Only
+TNSTC Salem,Dharmapuri,Hosur Depot,TN-29-N-6395,Ultra Deluxe,SAL-122,Mettur BS,Dharmapuri BS,19:00,20:30,Peak Hours Only
+TNSTC Salem,Salem,Mettur Rural,TN-30-N-5852,Ultra Deluxe,SAL-123,Mettur BS,Hosur Integrated BS,08:15,11:00,Peak Hours Only
+TNSTC Salem,Dharmapuri,Dharmapuri Main,TN-29-N-7198,Ultra Deluxe,SAL-124,Mettur BS,Salem Central BS,10:15,11:45,Peak Hours Only
+TNSTC Salem,Salem,Salem Central-1,TN-30-N-2574,Point-to-Point Deluxe,SAL-125,Dharmapuri BS,Hosur Integrated BS,07:00,09:45,Peak Hours Only
+TNSTC Salem,Dharmapuri,Hosur Depot,TN-29-N-4627,Point-to-Point Deluxe,SAL-126,Salem Central BS,Dharmapuri BS,20:30,21:00,Every 20 Mins
+TNSTC Salem,Salem,Mettur Rural,TN-30-N-8396,Ultra Deluxe,SAL-127,Salem Central BS,Mettur BS,15:00,17:30,Peak Hours Only
+TNSTC Salem,Dharmapuri,Dharmapuri Main,TN-29-N-8376,Mofussil (Express),SAL-128,Salem Central BS,Hosur Integrated BS,12:00,15:30,Every 30 Mins
+TNSTC Salem,Salem,Salem Central-1,TN-30-N-1580,Ultra Deluxe,SAL-129,Dharmapuri BS,Mettur BS,07:15,08:45,Daily
+TNSTC Salem,Dharmapuri,Hosur Depot,TN-29-N-2604,Mofussil (Express),SAL-130,Hosur Integrated BS,Salem Central BS,11:45,12:00,Daily
+TNSTC Salem,Salem,Mettur Rural,TN-30-N-3454,Ultra Deluxe,SAL-131,Salem Central BS,Hosur Integrated BS,17:00,20:15,Every 20 Mins
+TNSTC Salem,Dharmapuri,Dharmapuri Main,TN-29-N-4764,Point-to-Point Deluxe,SAL-132,Mettur BS,Hosur Integrated BS,16:00,18:15,Every 30 Mins
+TNSTC Salem,Salem,Salem Central-1,TN-30-N-2791,Town Bus (Ordinary),SAL-133,Salem Central BS,Hosur Integrated BS,10:00,12:00,Every 20 Mins
+TNSTC Salem,Dharmapuri,Hosur Depot,TN-29-N-3096,Town Bus (Ordinary),SAL-134,Salem Central BS,Dharmapuri BS,10:30,13:00,Daily
+TNSTC Salem,Salem,Mettur Rural,TN-30-N-2364,Ultra Deluxe,SAL-135,Hosur Integrated BS,Mettur BS,18:15,20:15,Weekends
+TNSTC Salem,Dharmapuri,Dharmapuri Main,TN-29-N-3954,Town Bus (Ordinary),SAL-136,Dharmapuri BS,Hosur Integrated BS,08:15,09:30,Peak Hours Only
+TNSTC Salem,Salem,Salem Central-1,TN-30-N-1552,Mofussil (Express),SAL-137,Dharmapuri BS,Salem Central BS,06:45,09:00,Daily
+TNSTC Salem,Dharmapuri,Hosur Depot,TN-29-N-4915,Ultra Deluxe,SAL-138,Salem Central BS,Hosur Integrated BS,17:30,18:15,Every 20 Mins
+TNSTC Salem,Salem,Mettur Rural,TN-30-N-7409,Ultra Deluxe,SAL-139,Hosur Integrated BS,Mettur BS,08:45,09:30,Every 20 Mins

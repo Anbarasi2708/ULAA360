@@ -1,0 +1,41 @@
+Parent_Corporation,Regional_Division,Subdivision_Depot,Bus_Registration_Number,Bus_Type,Route_ID,Origin_Bus_Stand,Destination_Bus_Stand,Departure_Time,Arrival_Time,Frequency_Type
+TNSTC Coimbatore,Coimbatore,Sungam-1 Depot,TN-38-N-8562,Point-to-Point Deluxe,COI-100,Erode Central BS,Tiruppur Old BS,06:00,07:00,Peak Hours Only
+TNSTC Coimbatore,Erode,Ondipudur-2,TN-33-N-9650,Ultra Deluxe,COI-101,Singanallur BS,Erode Central BS,12:30,16:00,Every 20 Mins
+TNSTC Coimbatore,Tiruppur,Erode Central Depot,TN-39-N-4442,Point-to-Point Deluxe,COI-102,Erode Central BS,Ukkadam BS,11:45,14:30,Peak Hours Only
+TNSTC Coimbatore,Ooty,Tiruppur Main,TN-43-N-7857,Ultra Deluxe,COI-103,Erode Central BS,Ooty Central BS,14:15,18:45,Weekends
+TNSTC Coimbatore,Coimbatore,Ooty Town Depot,TN-38-N-5077,Mofussil (Express),COI-104,Gandhipuram Central,Ukkadam BS,18:00,21:00,Every 30 Mins
+TNSTC Coimbatore,Erode,Sungam-1 Depot,TN-33-N-7793,Town Bus (Ordinary),COI-105,Gandhipuram Central,Tiruppur Old BS,18:15,19:00,Daily
+TNSTC Coimbatore,Tiruppur,Ondipudur-2,TN-39-N-2882,Point-to-Point Deluxe,COI-106,Ukkadam BS,Ooty Central BS,13:15,16:45,Peak Hours Only
+TNSTC Coimbatore,Ooty,Erode Central Depot,TN-43-N-5177,Mofussil (Express),COI-107,Gandhipuram Central,Ukkadam BS,21:45,22:45,Every 20 Mins
+TNSTC Coimbatore,Coimbatore,Tiruppur Main,TN-38-N-1137,Town Bus (Ordinary),COI-108,Ooty Central BS,Erode Central BS,14:00,15:45,Weekends
+TNSTC Coimbatore,Erode,Ooty Town Depot,TN-33-N-5517,Town Bus (Ordinary),COI-109,Tiruppur Old BS,Singanallur BS,14:15,15:00,Every 30 Mins
+TNSTC Coimbatore,Tiruppur,Sungam-1 Depot,TN-39-N-4674,Mofussil (Express),COI-110,Ukkadam BS,Gandhipuram Central,11:30,15:15,Peak Hours Only
+TNSTC Coimbatore,Ooty,Ondipudur-2,TN-43-N-8995,Town Bus (Ordinary),COI-111,Tiruppur Old BS,Ukkadam BS,05:00,09:15,Every 30 Mins
+TNSTC Coimbatore,Coimbatore,Erode Central Depot,TN-38-N-7689,Point-to-Point Deluxe,COI-112,Gandhipuram Central,Ooty Central BS,13:30,16:00,Every 20 Mins
+TNSTC Coimbatore,Erode,Tiruppur Main,TN-33-N-2213,Town Bus (Ordinary),COI-113,Tiruppur Old BS,Erode Central BS,16:00,17:15,Every 30 Mins
+TNSTC Coimbatore,Tiruppur,Ooty Town Depot,TN-39-N-7695,Town Bus (Ordinary),COI-114,Tiruppur Old BS,Ukkadam BS,08:30,10:30,Every 30 Mins
+TNSTC Coimbatore,Ooty,Sungam-1 Depot,TN-43-N-1996,Mofussil (Express),COI-115,Gandhipuram Central,Singanallur BS,08:30,09:45,Daily
+TNSTC Coimbatore,Coimbatore,Ondipudur-2,TN-38-N-9743,Point-to-Point Deluxe,COI-116,Erode Central BS,Singanallur BS,05:30,09:15,Every 20 Mins
+TNSTC Coimbatore,Erode,Erode Central Depot,TN-33-N-6615,Ultra Deluxe,COI-117,Erode Central BS,Ooty Central BS,06:30,07:30,Weekends
+TNSTC Coimbatore,Tiruppur,Tiruppur Main,TN-39-N-4821,Town Bus (Ordinary),COI-118,Erode Central BS,Ooty Central BS,15:45,18:00,Peak Hours Only
+TNSTC Coimbatore,Ooty,Ooty Town Depot,TN-43-N-9100,Mofussil (Express),COI-119,Ukkadam BS,Tiruppur Old BS,20:30,21:45,Every 30 Mins
+TNSTC Coimbatore,Coimbatore,Sungam-1 Depot,TN-38-N-2773,Mofussil (Express),COI-120,Ooty Central BS,Gandhipuram Central,10:15,11:00,Daily
+TNSTC Coimbatore,Erode,Ondipudur-2,TN-33-N-3832,Point-to-Point Deluxe,COI-121,Erode Central BS,Tiruppur Old BS,07:45,08:00,Every 20 Mins
+TNSTC Coimbatore,Tiruppur,Erode Central Depot,TN-39-N-3620,Point-to-Point Deluxe,COI-122,Erode Central BS,Ukkadam BS,22:30,00:15,Every 20 Mins
+TNSTC Coimbatore,Ooty,Tiruppur Main,TN-43-N-6104,Mofussil (Express),COI-123,Singanallur BS,Ukkadam BS,19:00,23:15,Daily
+TNSTC Coimbatore,Coimbatore,Ooty Town Depot,TN-38-N-8831,Point-to-Point Deluxe,COI-124,Gandhipuram Central,Ukkadam BS,18:45,21:00,Weekends
+TNSTC Coimbatore,Erode,Sungam-1 Depot,TN-33-N-1209,Point-to-Point Deluxe,COI-125,Tiruppur Old BS,Singanallur BS,15:45,17:15,Every 30 Mins
+TNSTC Coimbatore,Tiruppur,Ondipudur-2,TN-39-N-7131,Town Bus (Ordinary),COI-126,Tiruppur Old BS,Gandhipuram Central,15:15,18:30,Peak Hours Only
+TNSTC Coimbatore,Ooty,Erode Central Depot,TN-43-N-1761,Mofussil (Express),COI-127,Ooty Central BS,Gandhipuram Central,14:30,15:30,Daily
+TNSTC Coimbatore,Coimbatore,Tiruppur Main,TN-38-N-3406,Mofussil (Express),COI-128,Ooty Central BS,Gandhipuram Central,17:45,19:15,Every 30 Mins
+TNSTC Coimbatore,Erode,Ooty Town Depot,TN-33-N-9942,Ultra Deluxe,COI-129,Ooty Central BS,Singanallur BS,12:30,13:15,Weekends
+TNSTC Coimbatore,Tiruppur,Sungam-1 Depot,TN-39-N-2775,Ultra Deluxe,COI-130,Ukkadam BS,Singanallur BS,16:15,19:45,Every 20 Mins
+TNSTC Coimbatore,Ooty,Ondipudur-2,TN-43-N-6731,Ultra Deluxe,COI-131,Erode Central BS,Ukkadam BS,15:30,17:30,Every 20 Mins
+TNSTC Coimbatore,Coimbatore,Erode Central Depot,TN-38-N-1057,Mofussil (Express),COI-132,Erode Central BS,Ukkadam BS,17:45,20:15,Every 30 Mins
+TNSTC Coimbatore,Erode,Tiruppur Main,TN-33-N-5442,Mofussil (Express),COI-133,Ooty Central BS,Ukkadam BS,09:15,11:15,Weekends
+TNSTC Coimbatore,Tiruppur,Ooty Town Depot,TN-39-N-3055,Point-to-Point Deluxe,COI-134,Ukkadam BS,Singanallur BS,20:00,21:15,Peak Hours Only
+TNSTC Coimbatore,Ooty,Sungam-1 Depot,TN-43-N-8422,Mofussil (Express),COI-135,Ooty Central BS,Tiruppur Old BS,19:15,21:30,Peak Hours Only
+TNSTC Coimbatore,Coimbatore,Ondipudur-2,TN-38-N-2875,Ultra Deluxe,COI-136,Erode Central BS,Ukkadam BS,08:15,10:15,Weekends
+TNSTC Coimbatore,Erode,Erode Central Depot,TN-33-N-7932,Ultra Deluxe,COI-137,Ooty Central BS,Tiruppur Old BS,12:00,13:00,Peak Hours Only
+TNSTC Coimbatore,Tiruppur,Tiruppur Main,TN-39-N-9037,Point-to-Point Deluxe,COI-138,Ooty Central BS,Gandhipuram Central,05:45,07:15,Daily
+TNSTC Coimbatore,Ooty,Ooty Town Depot,TN-43-N-2218,Town Bus (Ordinary),COI-139,Ooty Central BS,Singanallur BS,13:15,16:00,Peak Hours Only

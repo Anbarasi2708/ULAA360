@@ -5,12 +5,12 @@
   --panel-bg: rgba(255, 255, 255, 0.95);
   --panel-border: rgba(0, 0, 0, 0.08);
   --text-primary: #0f172a;
-  --text-secondary: #64748b;
-  --accent-primary: #2563eb;
-  --accent-glow: rgba(37, 99, 235, 0.3);
-  --accent-secondary: #4f46e5;
-  --success: #059669;
-  --warning: #d97706;
+  --text-secondary: #475569;
+  --accent-primary: #0ea5e9; /* Logo light blue */
+  --accent-glow: rgba(14, 165, 233, 0.3);
+  --accent-secondary: #2563eb; /* Logo deep blue */
+  --success: #10b981; /* Logo teal/green */
+  --warning: #f59e0b; /* Logo orange/yellow */
   --danger: #dc2626;
 }
 
@@ -96,7 +96,7 @@ body {
 .title-gradient {
   font-size: 4rem;
   font-weight: 700;
-  background: linear-gradient(to right, #1d4ed8, #4338ca, #7e22ce);
+  background: linear-gradient(to right, #0ea5e9, #10b981, #f59e0b);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 0.5rem;

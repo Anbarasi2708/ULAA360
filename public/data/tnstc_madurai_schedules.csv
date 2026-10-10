@@ -1,0 +1,41 @@
+Parent_Corporation,Regional_Division,Subdivision_Depot,Bus_Registration_Number,Bus_Type,Route_ID,Origin_Bus_Stand,Destination_Bus_Stand,Departure_Time,Arrival_Time,Frequency_Type
+TNSTC Madurai,Madurai,Mattuthavani Depot,TN-58-N-6639,Mofussil (Express),MAD-100,Virudhunagar BS,Mattuthavani Integrated BS,13:45,14:45,Weekends
+TNSTC Madurai,Dindigul,Arappalayam Depot,TN-57-N-8951,Ultra Deluxe,MAD-101,Virudhunagar BS,Palani BS,21:00,23:00,Peak Hours Only
+TNSTC Madurai,Virudhunagar,Dindigul Bypass,TN-67-N-7502,Point-to-Point Deluxe,MAD-102,Arappalayam BS,Virudhunagar BS,16:45,18:45,Every 30 Mins
+TNSTC Madurai,Madurai,Virudhunagar Town,TN-58-N-3376,Point-to-Point Deluxe,MAD-103,Dindigul Central BS,Arappalayam BS,05:00,09:45,Peak Hours Only
+TNSTC Madurai,Dindigul,Mattuthavani Depot,TN-57-N-7942,Point-to-Point Deluxe,MAD-104,Virudhunagar BS,Arappalayam BS,20:30,23:45,Weekends
+TNSTC Madurai,Virudhunagar,Arappalayam Depot,TN-67-N-7062,Town Bus (Ordinary),MAD-105,Virudhunagar BS,Palani BS,17:00,18:00,Every 20 Mins
+TNSTC Madurai,Madurai,Dindigul Bypass,TN-58-N-5500,Mofussil (Express),MAD-106,Palani BS,Arappalayam BS,15:15,16:00,Every 30 Mins
+TNSTC Madurai,Dindigul,Virudhunagar Town,TN-57-N-2179,Town Bus (Ordinary),MAD-107,Virudhunagar BS,Arappalayam BS,09:30,12:45,Every 30 Mins
+TNSTC Madurai,Virudhunagar,Mattuthavani Depot,TN-67-N-1881,Ultra Deluxe,MAD-108,Virudhunagar BS,Dindigul Central BS,06:30,08:30,Every 30 Mins
+TNSTC Madurai,Madurai,Arappalayam Depot,TN-58-N-3227,Ultra Deluxe,MAD-109,Dindigul Central BS,Arappalayam BS,18:15,21:45,Daily
+TNSTC Madurai,Dindigul,Dindigul Bypass,TN-57-N-5604,Ultra Deluxe,MAD-110,Arappalayam BS,Mattuthavani Integrated BS,05:15,07:15,Weekends
+TNSTC Madurai,Virudhunagar,Virudhunagar Town,TN-67-N-6377,Town Bus (Ordinary),MAD-111,Mattuthavani Integrated BS,Dindigul Central BS,19:15,22:30,Peak Hours Only
+TNSTC Madurai,Madurai,Mattuthavani Depot,TN-58-N-6779,Point-to-Point Deluxe,MAD-112,Palani BS,Arappalayam BS,13:00,16:30,Every 20 Mins
+TNSTC Madurai,Dindigul,Arappalayam Depot,TN-57-N-6916,Mofussil (Express),MAD-113,Arappalayam BS,Virudhunagar BS,13:45,17:15,Peak Hours Only
+TNSTC Madurai,Virudhunagar,Dindigul Bypass,TN-67-N-7464,Ultra Deluxe,MAD-114,Arappalayam BS,Mattuthavani Integrated BS,21:45,22:00,Daily
+TNSTC Madurai,Madurai,Virudhunagar Town,TN-58-N-1429,Point-to-Point Deluxe,MAD-115,Arappalayam BS,Virudhunagar BS,12:15,14:00,Every 20 Mins
+TNSTC Madurai,Dindigul,Mattuthavani Depot,TN-57-N-5093,Ultra Deluxe,MAD-116,Dindigul Central BS,Arappalayam BS,14:45,16:45,Every 30 Mins
+TNSTC Madurai,Virudhunagar,Arappalayam Depot,TN-67-N-9644,Point-to-Point Deluxe,MAD-117,Arappalayam BS,Mattuthavani Integrated BS,17:30,19:15,Peak Hours Only
+TNSTC Madurai,Madurai,Dindigul Bypass,TN-58-N-4492,Point-to-Point Deluxe,MAD-118,Virudhunagar BS,Dindigul Central BS,10:45,14:30,Every 30 Mins
+TNSTC Madurai,Dindigul,Virudhunagar Town,TN-57-N-6718,Ultra Deluxe,MAD-119,Mattuthavani Integrated BS,Palani BS,13:30,16:45,Peak Hours Only
+TNSTC Madurai,Virudhunagar,Mattuthavani Depot,TN-67-N-2740,Point-to-Point Deluxe,MAD-120,Dindigul Central BS,Palani BS,20:00,00:30,Weekends
+TNSTC Madurai,Madurai,Arappalayam Depot,TN-58-N-3441,Ultra Deluxe,MAD-121,Virudhunagar BS,Arappalayam BS,21:00,01:00,Weekends
+TNSTC Madurai,Dindigul,Dindigul Bypass,TN-57-N-8717,Town Bus (Ordinary),MAD-122,Virudhunagar BS,Palani BS,14:45,18:30,Every 20 Mins
+TNSTC Madurai,Virudhunagar,Virudhunagar Town,TN-67-N-2328,Mofussil (Express),MAD-123,Mattuthavani Integrated BS,Dindigul Central BS,09:45,13:30,Every 30 Mins
+TNSTC Madurai,Madurai,Mattuthavani Depot,TN-58-N-9351,Town Bus (Ordinary),MAD-124,Virudhunagar BS,Mattuthavani Integrated BS,17:30,21:30,Weekends
+TNSTC Madurai,Dindigul,Arappalayam Depot,TN-57-N-9725,Point-to-Point Deluxe,MAD-125,Palani BS,Dindigul Central BS,15:00,17:00,Weekends
+TNSTC Madurai,Virudhunagar,Dindigul Bypass,TN-67-N-1925,Ultra Deluxe,MAD-126,Arappalayam BS,Palani BS,22:45,00:15,Daily
+TNSTC Madurai,Madurai,Virudhunagar Town,TN-58-N-4819,Ultra Deluxe,MAD-127,Dindigul Central BS,Mattuthavani Integrated BS,08:00,09:15,Every 20 Mins
+TNSTC Madurai,Dindigul,Mattuthavani Depot,TN-57-N-8215,Mofussil (Express),MAD-128,Dindigul Central BS,Palani BS,19:15,22:30,Every 30 Mins
+TNSTC Madurai,Virudhunagar,Arappalayam Depot,TN-67-N-2863,Ultra Deluxe,MAD-129,Virudhunagar BS,Mattuthavani Integrated BS,08:00,11:00,Daily
+TNSTC Madurai,Madurai,Dindigul Bypass,TN-58-N-9762,Point-to-Point Deluxe,MAD-130,Dindigul Central BS,Palani BS,15:30,19:00,Every 30 Mins
+TNSTC Madurai,Dindigul,Virudhunagar Town,TN-57-N-8104,Town Bus (Ordinary),MAD-131,Mattuthavani Integrated BS,Virudhunagar BS,18:45,21:15,Every 20 Mins
+TNSTC Madurai,Virudhunagar,Mattuthavani Depot,TN-67-N-6460,Point-to-Point Deluxe,MAD-132,Dindigul Central BS,Palani BS,18:45,21:15,Daily
+TNSTC Madurai,Madurai,Arappalayam Depot,TN-58-N-7577,Mofussil (Express),MAD-133,Mattuthavani Integrated BS,Palani BS,07:00,09:15,Every 20 Mins
+TNSTC Madurai,Dindigul,Dindigul Bypass,TN-57-N-6335,Town Bus (Ordinary),MAD-134,Dindigul Central BS,Mattuthavani Integrated BS,12:00,15:00,Every 30 Mins
+TNSTC Madurai,Virudhunagar,Virudhunagar Town,TN-67-N-1882,Town Bus (Ordinary),MAD-135,Virudhunagar BS,Arappalayam BS,14:00,17:00,Weekends
+TNSTC Madurai,Madurai,Mattuthavani Depot,TN-58-N-2854,Mofussil (Express),MAD-136,Virudhunagar BS,Mattuthavani Integrated BS,10:30,11:30,Peak Hours Only
+TNSTC Madurai,Dindigul,Arappalayam Depot,TN-57-N-8611,Mofussil (Express),MAD-137,Virudhunagar BS,Arappalayam BS,12:15,13:15,Weekends
+TNSTC Madurai,Virudhunagar,Dindigul Bypass,TN-67-N-1304,Ultra Deluxe,MAD-138,Dindigul Central BS,Arappalayam BS,13:00,17:45,Peak Hours Only
+TNSTC Madurai,Madurai,Virudhunagar Town,TN-58-N-7584,Point-to-Point Deluxe,MAD-139,Virudhunagar BS,Arappalayam BS,07:30,10:45,Every 30 Mins

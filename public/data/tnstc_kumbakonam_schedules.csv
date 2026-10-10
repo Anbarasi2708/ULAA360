@@ -1,0 +1,41 @@
+Parent_Corporation,Regional_Division,Subdivision_Depot,Bus_Registration_Number,Bus_Type,Route_ID,Origin_Bus_Stand,Destination_Bus_Stand,Departure_Time,Arrival_Time,Frequency_Type
+TNSTC Kumbakonam,Kumbakonam,Kumbakonam Central,TN-68-N-3950,Ultra Deluxe,KUM-100,Kumbakonam BS,Trichy Central BS,12:45,14:45,Peak Hours Only
+TNSTC Kumbakonam,Karur,Karur Town,TN-47-N-2542,Mofussil (Express),KUM-101,Karur Central BS,Chatram BS,09:45,11:45,Every 30 Mins
+TNSTC Kumbakonam,Karaikudi,Karaikudi Main,TN-63-N-9729,Ultra Deluxe,KUM-102,Trichy Central BS,Karur Central BS,13:30,17:15,Every 20 Mins
+TNSTC Kumbakonam,Trichy,Trichy Cantonment,TN-45-N-9313,Town Bus (Ordinary),KUM-103,Karaikudi New BS,Chatram BS,18:45,20:00,Every 20 Mins
+TNSTC Kumbakonam,Pudukkottai,Pudukkottai Depot,TN-55-N-6871,Mofussil (Express),KUM-104,Trichy Central BS,Karaikudi New BS,22:45,00:30,Peak Hours Only
+TNSTC Kumbakonam,Kumbakonam,Kumbakonam Central,TN-68-N-3006,Ultra Deluxe,KUM-105,Karur Central BS,Karaikudi New BS,05:45,09:00,Every 20 Mins
+TNSTC Kumbakonam,Karur,Karur Town,TN-47-N-4829,Point-to-Point Deluxe,KUM-106,Chatram BS,Pudukkottai New BS,21:15,23:45,Every 20 Mins
+TNSTC Kumbakonam,Karaikudi,Karaikudi Main,TN-63-N-1135,Mofussil (Express),KUM-107,Trichy Central BS,Kumbakonam BS,20:15,21:00,Daily
+TNSTC Kumbakonam,Trichy,Trichy Cantonment,TN-45-N-9802,Mofussil (Express),KUM-108,Kumbakonam BS,Karur Central BS,21:45,22:15,Every 30 Mins
+TNSTC Kumbakonam,Pudukkottai,Pudukkottai Depot,TN-55-N-2286,Town Bus (Ordinary),KUM-109,Karaikudi New BS,Chatram BS,20:00,22:30,Peak Hours Only
+TNSTC Kumbakonam,Kumbakonam,Kumbakonam Central,TN-68-N-7152,Mofussil (Express),KUM-110,Kumbakonam BS,Karaikudi New BS,09:45,11:00,Every 20 Mins
+TNSTC Kumbakonam,Karur,Karur Town,TN-47-N-7164,Point-to-Point Deluxe,KUM-111,Karaikudi New BS,Karur Central BS,14:45,16:45,Weekends
+TNSTC Kumbakonam,Karaikudi,Karaikudi Main,TN-63-N-2373,Point-to-Point Deluxe,KUM-112,Chatram BS,Pudukkottai New BS,20:45,22:00,Every 20 Mins
+TNSTC Kumbakonam,Trichy,Trichy Cantonment,TN-45-N-8051,Mofussil (Express),KUM-113,Trichy Central BS,Kumbakonam BS,18:45,19:45,Weekends
+TNSTC Kumbakonam,Pudukkottai,Pudukkottai Depot,TN-55-N-3408,Mofussil (Express),KUM-114,Trichy Central BS,Chatram BS,13:45,17:30,Daily
+TNSTC Kumbakonam,Kumbakonam,Kumbakonam Central,TN-68-N-6880,Mofussil (Express),KUM-115,Kumbakonam BS,Trichy Central BS,08:45,11:15,Every 20 Mins
+TNSTC Kumbakonam,Karur,Karur Town,TN-47-N-8734,Ultra Deluxe,KUM-116,Karaikudi New BS,Pudukkottai New BS,20:45,21:45,Daily
+TNSTC Kumbakonam,Karaikudi,Karaikudi Main,TN-63-N-7581,Point-to-Point Deluxe,KUM-117,Pudukkottai New BS,Karur Central BS,21:45,22:45,Peak Hours Only
+TNSTC Kumbakonam,Trichy,Trichy Cantonment,TN-45-N-2729,Ultra Deluxe,KUM-118,Kumbakonam BS,Karaikudi New BS,21:00,22:30,Every 20 Mins
+TNSTC Kumbakonam,Pudukkottai,Pudukkottai Depot,TN-55-N-4612,Town Bus (Ordinary),KUM-119,Trichy Central BS,Pudukkottai New BS,16:00,17:30,Peak Hours Only
+TNSTC Kumbakonam,Kumbakonam,Kumbakonam Central,TN-68-N-2995,Ultra Deluxe,KUM-120,Karaikudi New BS,Chatram BS,11:30,12:15,Weekends
+TNSTC Kumbakonam,Karur,Karur Town,TN-47-N-8173,Mofussil (Express),KUM-121,Pudukkottai New BS,Karaikudi New BS,15:15,19:30,Every 20 Mins
+TNSTC Kumbakonam,Karaikudi,Karaikudi Main,TN-63-N-6960,Town Bus (Ordinary),KUM-122,Karur Central BS,Trichy Central BS,08:45,09:15,Peak Hours Only
+TNSTC Kumbakonam,Trichy,Trichy Cantonment,TN-45-N-7738,Town Bus (Ordinary),KUM-123,Karur Central BS,Karaikudi New BS,19:30,20:45,Every 30 Mins
+TNSTC Kumbakonam,Pudukkottai,Pudukkottai Depot,TN-55-N-2047,Point-to-Point Deluxe,KUM-124,Kumbakonam BS,Karur Central BS,21:30,22:00,Peak Hours Only
+TNSTC Kumbakonam,Kumbakonam,Kumbakonam Central,TN-68-N-1967,Town Bus (Ordinary),KUM-125,Karur Central BS,Karaikudi New BS,17:45,20:00,Every 30 Mins
+TNSTC Kumbakonam,Karur,Karur Town,TN-47-N-1217,Mofussil (Express),KUM-126,Chatram BS,Karur Central BS,07:30,10:30,Every 30 Mins
+TNSTC Kumbakonam,Karaikudi,Karaikudi Main,TN-63-N-1824,Mofussil (Express),KUM-127,Karur Central BS,Kumbakonam BS,19:15,23:00,Peak Hours Only
+TNSTC Kumbakonam,Trichy,Trichy Cantonment,TN-45-N-3457,Point-to-Point Deluxe,KUM-128,Pudukkottai New BS,Karur Central BS,21:30,23:30,Weekends
+TNSTC Kumbakonam,Pudukkottai,Pudukkottai Depot,TN-55-N-6311,Mofussil (Express),KUM-129,Karur Central BS,Trichy Central BS,07:30,08:30,Every 20 Mins
+TNSTC Kumbakonam,Kumbakonam,Kumbakonam Central,TN-68-N-9882,Point-to-Point Deluxe,KUM-130,Kumbakonam BS,Karur Central BS,15:00,19:45,Every 20 Mins
+TNSTC Kumbakonam,Karur,Karur Town,TN-47-N-5776,Ultra Deluxe,KUM-131,Kumbakonam BS,Karaikudi New BS,05:15,06:45,Every 30 Mins
+TNSTC Kumbakonam,Karaikudi,Karaikudi Main,TN-63-N-3636,Mofussil (Express),KUM-132,Kumbakonam BS,Chatram BS,19:00,20:00,Daily
+TNSTC Kumbakonam,Trichy,Trichy Cantonment,TN-45-N-2114,Ultra Deluxe,KUM-133,Kumbakonam BS,Trichy Central BS,06:00,08:30,Daily
+TNSTC Kumbakonam,Pudukkottai,Pudukkottai Depot,TN-55-N-1011,Mofussil (Express),KUM-134,Karaikudi New BS,Kumbakonam BS,19:45,23:45,Weekends
+TNSTC Kumbakonam,Kumbakonam,Kumbakonam Central,TN-68-N-1276,Mofussil (Express),KUM-135,Kumbakonam BS,Pudukkottai New BS,12:30,16:30,Every 20 Mins
+TNSTC Kumbakonam,Karur,Karur Town,TN-47-N-4932,Ultra Deluxe,KUM-136,Pudukkottai New BS,Karaikudi New BS,08:15,10:30,Daily
+TNSTC Kumbakonam,Karaikudi,Karaikudi Main,TN-63-N-5495,Ultra Deluxe,KUM-137,Kumbakonam BS,Karaikudi New BS,22:30,02:45,Weekends
+TNSTC Kumbakonam,Trichy,Trichy Cantonment,TN-45-N-9476,Town Bus (Ordinary),KUM-138,Pudukkottai New BS,Karaikudi New BS,12:45,16:15,Every 30 Mins
+TNSTC Kumbakonam,Pudukkottai,Pudukkottai Depot,TN-55-N-5307,Mofussil (Express),KUM-139,Karur Central BS,Pudukkottai New BS,16:45,18:00,Weekends
