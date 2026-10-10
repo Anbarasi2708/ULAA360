@@ -20,10 +20,40 @@ export default function AdminDashboard() {
 
   const [denyInput, setDenyInput] = useState('');
   const [showDenyInput, setShowDenyInput] = useState(false);
+  const [prediction, setPrediction] = useState(null);
+  const [fleetStatus, setFleetStatus] = useState(null);
+
+  // Fetch the latest request from the SQLite backend
+  const fetchRequests = async (depot) => {
+    try {
+      const res = await fetch(`/api/depot-requests?dest_depot=${depot}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.length > 0) {
+          const req = data[0];
+          setRequestState({ 
+            id: req.id,
+            status: req.status, 
+            from: req.source_depot, 
+            to: req.dest_depot, 
+            rejectReason: req.reject_reason || '',
+            required_buses: req.required_buses
+          });
+        } else {
+          setRequestState({ status: 'IDLE', to: '', from: '', rejectReason: '' });
+        }
+      }
+    } catch(e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     const depot = localStorage.getItem('activeDepot');
-    if (depot) setActiveDepot(depot);
+    if (depot) {
+      setActiveDepot(depot);
+      fetchRequests(depot);
+    }
 
     // Fetch the 184 dataset dynamically
     fetch('/data/stops_processed.csv')
@@ -49,25 +79,63 @@ export default function AdminDashboard() {
 
     fetch('https://api.open-meteo.com/v1/forecast?latitude=10.7661&longitude=79.6344&current_weather=true')
       .then(res => res.json())
-      .then(data => setWeather(data.current_weather))
+      .then(data => {
+        setWeather(data.current_weather);
+        return data.current_weather;
+      })
+      .then(weatherData => {
+        // Fetch ML Prediction using real backend
+        fetch('/api/predictions/demand', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            event_type: "Temple Festival",
+            dest: "Thiruvarur",
+            time_interval: "12:00-13:00",
+            weather: weatherData && weatherData.weathercode > 50 ? "Heavy Rain" : "Clear"
+          })
+        }).then(res => res.json()).then(setPrediction).catch(console.error);
+      })
+      .catch(console.error);
+      
+    // Fetch real fleet availability
+    fetch(`/api/buses/availability?depot_id=TNSTC_MDU`)
+      .then(res => res.json())
+      .then(setFleetStatus)
       .catch(console.error);
 
-    const handleStorage = () => {
-      const savedReq = localStorage.getItem('ulaa_demo_req');
-      if (savedReq) setRequestState(JSON.parse(savedReq));
-    };
-    window.addEventListener('storage', handleStorage);
-    const interval = setInterval(handleStorage, 1000);
+    const interval = setInterval(() => {
+      const currentDepot = localStorage.getItem('activeDepot');
+      if (currentDepot) fetchRequests(currentDepot);
+    }, 2000);
 
-    return () => {
-      window.removeEventListener('storage', handleStorage);
-      clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, []);
 
-  const updateRequest = (newState) => {
-    localStorage.setItem('ulaa_demo_req', JSON.stringify(newState));
-    setRequestState(newState);
+  const updateRequest = async (newState) => {
+    try {
+      if (newState.status === 'PENDING') {
+        await fetch('/api/depot-requests', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            source_depot: newState.from,
+            dest_depot: newState.to,
+            required_buses: 30,
+            reason: 'Festival Overload'
+          })
+        });
+      } else if (requestState.id && (newState.status === 'APPROVED' || newState.status === 'DENIED' || newState.status === 'IDLE')) {
+        await fetch(`/api/depot-requests/${requestState.id}`, {
+          method: 'PATCH',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ status: newState.status, reject_reason: newState.rejectReason })
+        });
+      }
+      fetchRequests(activeDepot);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleOutgoingRequest = () => {
@@ -218,11 +286,12 @@ export default function AdminDashboard() {
                 <div className="bg-gray-50 p-3 rounded my-3 border border-gray-100" style={{ background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
                   <p className="text-sm font-medium mb-1 text-primary">Requested Fleet Specifications:</p>
                   <ul className="text-sm text-secondary list-disc pl-4 mb-2" style={{ maxHeight: '120px', overflowY: 'auto' }}>
-                    <li><strong>TN-58-N-1299</strong> (Type: LSS, Cap: 60) - 182km away</li>
-                    <li><strong>TN-58-N-3044</strong> (Type: Express, Cap: 50) - 185km away</li>
-                    <li>... and 28 more.</li>
+                    {fleetStatus?.idle_buses?.slice(0,5).map(b => (
+                      <li key={b.bus_id}><strong>{b.bus_id}</strong> (Cap: {b.capacity})</li>
+                    ))}
+                    <li>... and {Math.max(0, (requestState.required_buses || 30) - 5)} more.</li>
                   </ul>
-                  <p className="text-xs text-danger font-medium">Justification: Thiruvarur Festival Shortfall.</p>
+                  <p className="text-xs text-danger font-medium">Justification: {requestState.reason || 'Festival Overload'}</p>
                 </div>
                 
                 {requestState.status === 'PENDING' && !showDenyInput && (
@@ -276,12 +345,18 @@ export default function AdminDashboard() {
                 <AlertTriangle size={24} color="#dc2626" />
                 <div>
                   <strong style={{ color: '#991b1b' }}>Thiruvarur Festival Overload</strong>
-                  <ul className="text-sm mt-1" style={{ color: '#991b1b' }}>
-                    <li>Past Demand: 3200 px</li>
-                    <li>Growth/Weather Penalty: +1300 px</li>
-                    <li><strong>Predicted Crowd: 4500 px</strong></li>
-                  </ul>
-                  <p className="mt-2 font-bold text-danger">Shortfall: 2000 passengers (30 buses)</p>
+                  {prediction ? (
+                    <>
+                      <ul className="text-sm mt-1" style={{ color: '#991b1b' }}>
+                        <li>Historical Baseline: {prediction.metadata?.baseline?.toFixed(0) || 3200} px</li>
+                        <li>Model Weather/Time Adjustments: {((prediction.metadata?.multipliers_used?.weather || 1) * (prediction.metadata?.multipliers_used?.hour || 1)).toFixed(2)}x</li>
+                        <li><strong>Predicted Crowd: {prediction.predicted_pax} px</strong></li>
+                      </ul>
+                      <p className="mt-2 font-bold text-danger">Required Additional Buses: {prediction.required_buses} buses</p>
+                    </>
+                  ) : (
+                    <p className="mt-2">Loading ML Prediction...</p>
+                  )}
                 </div>
               </div>
               
@@ -289,12 +364,12 @@ export default function AdminDashboard() {
               
               {requestState.status === 'IDLE' && (
                 <div className="recommendation-card">
-                  <h4>Request 30 buses from Madurai Div</h4>
+                  <h4>Request {prediction?.required_buses || 30} buses from Madurai Div</h4>
                   <div className="bg-gray-50 p-2 rounded my-2 border border-gray-100" style={{ background: '#f8fafc', fontSize: '0.875rem' }}>
                     <p className="font-semibold text-primary mb-1">Available at MDU:</p>
-                    <p className="text-secondary text-sm">Madurai has sufficient fleet. AI has bundled specific bus IDs and distances.</p>
+                    <p className="text-secondary text-sm">Madurai has {fleetStatus?.available_count || '...'} idle buses. AI has bundled specific bus IDs.</p>
                   </div>
-                  <button className="btn-primary w-full mt-2" onClick={handleOutgoingRequest}>Send Request Payload</button>
+                  <button className="btn-primary w-full mt-2" onClick={() => updateRequest({ status: 'PENDING', from: 'TNSTC_KUM', to: 'TNSTC_MDU', rejectReason: '' })}>Send Request Payload</button>
                 </div>
               )}
 

@@ -19,14 +19,27 @@ export default function DepotLogin() {
     { id: 'TNSTC_TNV', name: 'Tirunelveli Division' }
   ];
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const depotPrefix = depot.split('_')[1];
-    if (password === `${depotPrefix}@360`) {
-      localStorage.setItem('activeDepot', depot);
-      navigate('/admin');
-    } else {
-      setError(lang === 'ta' ? 'தவறான கடவுச்சொல்.' : 'Invalid password. Check credentials.');
+    try {
+      // Map depot format (TNSTC_KUM) to username format (admin_kum) expected by backend
+      const username = 'admin_' + depot.split('_')[1].toLowerCase();
+      
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem('activeDepot', data.depot_id);
+        localStorage.setItem('ulaa_token', data.token);
+        navigate('/admin');
+      } else {
+        setError(lang === 'ta' ? 'தவறான கடவுச்சொல்.' : (data.error || 'Invalid credentials.'));
+      }
+    } catch (err) {
+      setError('Cannot connect to authentication server.');
     }
   };
 
