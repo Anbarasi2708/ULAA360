@@ -1,0 +1,7 @@
+id,name,lat,lng,region,contact,pass
+"TNSTC_CBE","Coimbatore Division","11.0168","76.9558","Coimbatore","MGR_CBE","CBE@360"
+"TNSTC_MDU","Madurai Division","9.9252","78.1198","Madurai","MGR_MDU","MDU@360"
+"TNSTC_KUM","Kumbakonam Division (Thiruvarur/Trichy)","10.9602","79.3845","Kumbakonam","MGR_KUM","KUM@360"
+"TNSTC_SLM","Salem Division","11.6643","78.146","Salem","MGR_SLM","SLM@360"
+"TNSTC_VPM","Villupuram Division","11.9401","79.4861","Villupuram","MGR_VPM","VPM@360"
+"TNSTC_TNV","Tirunelveli Division","8.7139","77.7567","Tirunelveli","MGR_TNV","TNV@360"
