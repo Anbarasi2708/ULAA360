@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
-import { ArrowLeft, Bell, Settings, Bus, AlertTriangle, CheckCircle, TrendingUp, Inbox, Send, Activity, CloudRain, Sun, CalendarDays } from 'lucide-react';
+import { ArrowLeft, Bell, Settings, Bus, AlertTriangle, CheckCircle, TrendingUp, Inbox, Send, Activity, CloudRain, Sun, CalendarDays, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../LanguageContext';
 import 'leaflet/dist/leaflet.css';
@@ -142,6 +142,9 @@ export default function AdminDashboard() {
           <button className="icon-btn font-semibold text-sm" onClick={toggleLang}>
             {lang === 'en' ? 'TA' : 'EN'}
           </button>
+          <button className="icon-btn" title="Reset Demo Flow" onClick={() => updateRequest({ status: 'IDLE', to: '', from: '', rejectReason: '' })}>
+            <RefreshCw size={20} />
+          </button>
           <button className="icon-btn" onClick={() => { localStorage.clear(); navigate('/login'); }}><Settings /></button>
         </div>
       </nav>
@@ -168,7 +171,7 @@ export default function AdminDashboard() {
                     <CircleMarker 
                       key={stop.id} 
                       center={[stop.lat, stop.lng]} 
-                      radius={stop.level === 'High' ? 18 : stop.level === 'Moderate' ? 12 : 5}
+                      radius={5}
                       pathOptions={{ color: stop.color, fillColor: stop.color, fillOpacity: stop.level === 'Normal' ? 0.3 : 0.8 }}
                     >
                       <Popup>
@@ -308,6 +311,9 @@ export default function AdminDashboard() {
                 <div className="recommendation-card" style={{ borderLeft: '4px solid #10b981' }}>
                   <h4>Madurai Request Accepted!</h4>
                   <p className="text-secondary text-sm mt-2">All 30 buses en route.</p>
+                  <button className="btn-primary w-full mt-4" style={{ background: '#f1f5f9', color: '#0f172a', border: '1px solid #cbd5e1', boxShadow: 'none' }} onClick={() => updateRequest({ status: 'IDLE', to: '', from: '', rejectReason: '' })}>
+                    Start New Request (Reset)
+                  </button>
                 </div>
               )}
 
@@ -321,6 +327,9 @@ export default function AdminDashboard() {
                     <p className="text-sm text-secondary">Salem has free idle buses.</p>
                     <button className="btn-primary w-full mt-2" onClick={handleBackupRequest} style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
                       Request Salem (SLM)
+                    </button>
+                    <button className="btn-primary w-full mt-2" style={{ background: '#f1f5f9', color: '#0f172a', border: '1px solid #cbd5e1', boxShadow: 'none' }} onClick={() => updateRequest({ status: 'IDLE', to: '', from: '', rejectReason: '' })}>
+                      Cancel & Reset
                     </button>
                   </div>
                 </div>
