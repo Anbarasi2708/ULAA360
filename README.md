@@ -60,8 +60,15 @@ Navigate to [http://localhost:8080](http://localhost:8080) in your web browser.
 
 ## ☁️ Deployment Guide
 
-ULAA360 is optimized for instant zero-configuration deployment on modern cloud platforms (Render, Railway, Heroku, PythonAnywhere, Docker):
+### Deploy to Vercel (1-Click)
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAnbarasi2708%2FULAA360)
+
+1. Click the **Deploy with Vercel** button above or import the GitHub repository (`https://github.com/Anbarasi2708/ULAA360`) directly in your [Vercel Dashboard](https://vercel.com/new).
+2. Vercel automatically detects `vercel.json` and configures the Python Serverless Function (`api/index.py`) and static asset routing.
+3. Click **Deploy** — your live application will be live at `https://ulaa360.vercel.app` in under 60 seconds!
+
+### Other Cloud Platforms (Render, Railway, Heroku)
 - **Procfile** is included: `web: python server.py`
 - **Dynamic Port**: The server automatically reads the `PORT` environment variable assigned by cloud hosting platforms.
 - **Self-contained**: Built-in HTTP API handler and static asset delivery without complex build pipelines.

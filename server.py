@@ -669,13 +669,16 @@ class Ulaa360Handler(SimpleHTTPRequestHandler):
         }
 
         ev_file = os.path.join(DATA_DIR, "festival_events.csv")
-        with open(ev_file, "a", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=[
-                "event_id", "event_name", "event_type", "festival_destination_stop_id",
-                "start_datetime", "programme_end_datetime", "expected_attendance",
-                "expected_departure_window_start", "expected_departure_window_end"
-            ])
-            writer.writerow(new_event)
+        try:
+            with open(ev_file, "a", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=[
+                    "event_id", "event_name", "event_type", "festival_destination_stop_id",
+                    "start_datetime", "programme_end_datetime", "expected_attendance",
+                    "expected_departure_window_start", "expected_departure_window_end"
+                ])
+                writer.writerow(new_event)
+        except Exception as e:
+            print("Error appending festival event (read-only filesystem):", e)
 
         return {"success": True, "event": new_event}
 
