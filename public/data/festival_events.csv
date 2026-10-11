@@ -1,3 +1,0 @@
-id,name,type,dest_stop,start,end,attendance,dep_start,dep_end
-"EVT_TVR_01","Thiruvarur Ther Thiruvizha","Temple Festival","STOP_TVR_MAIN","2026-10-18T06:00:00","2026-10-19T22:00:00","50000","2026-10-19T18:00:00","2026-10-19T23:59:00"
-"EVT_MDU_01","Azhagar Thiruvizha","Temple Festival","STOP_MDU_AZH","2026-10-30T04:00:00","2026-10-31T20:00:00","80000","2026-10-31T16:00:00","2026-10-31T22:00:00"

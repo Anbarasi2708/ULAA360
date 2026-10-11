@@ -1,13 +1,747 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ulaa360</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ulaa360 | Festival Crowd & Transport Demand Prediction System</title>
+  <meta name="description" content="AI-driven festival crowd prediction and fixed-fleet bus redistribution system for Tamil Nadu transit hubs.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Mapbox GL JS -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css" rel="stylesheet" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       1. INITIAL ROLE GATE MODAL (Admin vs User Selector - No early auth)
+       ========================================================================= -->
+  <div id="role-gate-modal">
+    <div class="gate-card">
+      <img src="assets/ulaa360_logo.png" alt="Ulaa360 Logo" class="gate-logo" onerror="this.style.display='none'">
+      <h1 class="gate-title">Welcome to Ulaa360</h1>
+      <p class="gate-desc">
+        Tamil Nadu Festival Crowd & Transport Demand Prediction System.<br>
+        Predicting pilgrim surges, eliminating manual depot calls, and proactively redistributing fixed bus fleets before bottlenecks occur.
+      </p>
+
+      <div class="gate-options">
+        <div class="gate-role-box" id="gate-btn-admin" onclick="selectRole('admin')">
+          <div class="gate-role-icon">🎛️</div>
+          <span class="gate-badge">Full Operational Control</span>
+          <h3>Depot Manager Dashboard</h3>
+          <p>AI crowd forecasts, inter-depot bus reallocation requests, live trade-off analysis, Mapbox fleet tracking & daily trip operations.</p>
+        </div>
+
+        <div class="gate-role-box" id="gate-btn-user" onclick="selectRole('user')">
+          <div class="gate-role-icon">🚶</div>
+          <span class="gate-badge" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan);">Commuter / Devotee</span>
+          <h3>Passenger Dashboard</h3>
+          <p>Universal Tamil Nadu route search, live ETVM seat occupancy, empty-stop spare bus advisories & crowd radar.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       2. TOP APPLICATION HEADER
+       ========================================================================= -->
+  <header class="app-header">
+    <div class="brand-wrapper" onclick="toggleRoleModal()">
+      <img src="assets/ulaa360_logo.png" alt="Ulaa360 Logo" class="brand-logo-img" onerror="this.style.display='none'">
+      <div class="brand-meta">
+        <div class="brand-title">
+          Ulaa360
+          <span class="brand-badge">TN-Transit AI</span>
+        </div>
+        <div class="brand-subtitle" id="tagline-text">Crowd Surge & Smart Fleet Redistribution</div>
+      </div>
+    </div>
+
+    <!-- Center Role Switcher -->
+    <div class="role-switch-container">
+      <button class="role-btn active" id="nav-btn-admin" onclick="setRole('admin')">
+        <span>👔</span> Depot Manager (Admin)
+      </button>
+      <button class="role-btn" id="nav-btn-user" onclick="setRole('user')">
+        <span>🚶</span> Commuter / Devotee
+      </button>
+    </div>
+
+    <div class="header-actions">
+      <button class="lang-btn" id="lang-toggle-btn" onclick="toggleLanguage()">
+        🌐 தமிழ் / EN
+      </button>
+    </div>
+  </header>
+
+  <main class="app-content">
+
+    <!-- =======================================================================
+         VIEW A: DEPOT MANAGER (ADMIN) DASHBOARD
+         ======================================================================= -->
+    <section id="admin-view" style="display: block;">
+
+      <!-- Active Depot Corporation Switcher & Credentials Strip -->
+      <div class="glass-panel" style="padding: 14px 22px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; border-left: 4px solid var(--accent-blue);">
+        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+            🏢 Active Divisional Depot:
+          </span>
+          <select id="active-depot-select" class="select-custom" style="min-width: 380px; font-weight: 700;" onchange="onDepotChanged()">
+            <!-- Populated via JS with 34 TNSTC Depots -->
+          </select>
+          <span class="badge-rowcount" id="active-depot-corp-badge">TNSTC Kumbakonam</span>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-secondary" onclick="openCredentialsModal()">
+            <span>🔑</span> TNSTC Depot Passwords & Directory
+          </button>
+        </div>
+      </div>
+
+      <!-- Festival Selector Bar -->
+      <div class="event-bar glass-panel">
+        <div class="event-picker-group">
+          <label for="event-select">Active Festival Event:</label>
+          <select id="event-select" class="select-custom" onchange="onFestivalChanged()">
+            <option value="EVT_TVR_THER_2026">🚩 Thiruvarur Azhi Ther Thiruvizha (Oct 18-19, 2026)</option>
+            <option value="EVT_MDU_AZHAGAR_2026">🚩 Madurai Sri Kallazhagar Vaigai Ezhuntharulal (Oct 30-31, 2026)</option>
+          </select>
+          <button class="btn-secondary" onclick="openAddFestivalModal()">
+            <span>➕</span> Register Local Oor Thiruvizha
+          </button>
+        </div>
+
+        <div class="event-status-tag" id="event-alert-tag">
+          <span class="status-dot"></span>
+          <span id="alert-text">CRITICAL OVERCROWDING FORECASTED (Peak 20:30-22:30)</span>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card glass-panel">
+          <div class="kpi-top">
+            <span class="kpi-label">Predicted Exit Peak Crowd</span>
+            <span class="kpi-icon">👥</span>
+          </div>
+          <div class="kpi-value" id="kpi-peak-crowd" style="color: #f87171;">40,000</div>
+          <div class="kpi-sub">
+            <span class="kpi-badge-danger">🚨 3,330% of Safe Capacity</span> (1,200 limit)
+          </div>
+        </div>
+
+        <div class="kpi-card glass-panel">
+          <div class="kpi-top">
+            <span class="kpi-label">Baseline Scheduled Buses</span>
+            <span class="kpi-icon">🚌</span>
+          </div>
+          <div class="kpi-value" id="kpi-base-buses">12</div>
+          <div class="kpi-sub">
+            <span>Serves max 720 pax/hr</span> (Deficit: 52 buses)
+          </div>
+        </div>
+
+        <div class="kpi-card glass-panel">
+          <div class="kpi-top">
+            <span class="kpi-label">AI Reallocated Fleet</span>
+            <span class="kpi-icon">🔄</span>
+          </div>
+          <div class="kpi-value" id="kpi-reassigned-buses" style="color: #34d399;">40 Buses</div>
+          <div class="kpi-sub">
+            <span class="kpi-badge-success">✓ 94.2% Crowd Evacuated</span> in 90 mins
+          </div>
+        </div>
+
+        <div class="kpi-card glass-panel">
+          <div class="kpi-top">
+            <span class="kpi-label">Weather Impact Index</span>
+            <span class="kpi-icon">🌦️</span>
+          </div>
+          <div class="kpi-value" id="kpi-weather" style="font-size: 1.45rem; color: #38bdf8;">65% Rain Prob</div>
+          <div class="kpi-sub">
+            <span>Surge window shifted 30m earlier</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cross-Depot Bus Request & Response Center -->
+      <div class="glass-panel" style="padding: 20px 24px; margin-bottom: 24px;">
+        <div class="section-head" style="padding: 0 0 14px 0;">
+          <div class="section-title">
+            <span>📡</span> Cross-Depot Bus Allocation Protocol & Digital Dispatch Center
+          </div>
+          <span style="font-size: 0.8rem; color: var(--accent-cyan);">
+            Direct digital inter-depot workflow — Replaces manual phone calls
+          </span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" class="interdepot-grid">
+          <!-- Incoming Requests (From other depots asking for this depot's buses) -->
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span style="font-size: 0.86rem; font-weight: 700; color: #38bdf8;">
+                📥 Incoming Requests (From Other Depots)
+              </span>
+              <span class="badge-rowcount" id="incoming-req-badge">1 Pending</span>
+            </div>
+            <div id="incoming-requests-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 220px; overflow-y: auto;">
+              <!-- Dynamic items injected via JS -->
+            </div>
+          </div>
+
+          <!-- Outgoing Requests & Live Responses (Requests sent by this depot) -->
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span style="font-size: 0.86rem; font-weight: 700; color: #34d399;">
+                📤 Sent Requests & Live Corporation Responses
+              </span>
+              <span class="badge-rowcount" id="outgoing-req-badge">2 Active</span>
+            </div>
+            <div id="outgoing-requests-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 220px; overflow-y: auto;">
+              <!-- Dynamic items injected via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tri-Stage Daily Fleet Operations Panel (3-Column Kanban Board instead of plain list) -->
+      <div class="glass-panel" style="padding: 22px 24px; margin-bottom: 24px;">
+        <div class="section-head" style="padding: 0 0 16px 0;">
+          <div class="section-title">
+            <span>🚍</span> Depot Daily Operations & Fleet Status Tracking
+          </div>
+          <span style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 700;">
+            Live 3-Stage Operational Board (நேற்று புறப்பட்டவை &bull; வந்தடைந்தவை &bull; வழியில் உள்ளவை)
+          </span>
+        </div>
+
+        <div class="trips-kanban-board">
+          <!-- Col 1: Departed Yesterday -->
+          <div class="kanban-col">
+            <div class="kanban-col-head">
+              <span class="kanban-col-title">
+                <span>🛫</span> Departed Yesterday
+              </span>
+              <span class="badge-rowcount" id="count-departed">0</span>
+            </div>
+            <div class="kanban-cards-stack" id="kanban-departed-stack">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+
+          <!-- Col 2: Reached Destination -->
+          <div class="kanban-col">
+            <div class="kanban-col-head">
+              <span class="kanban-col-title">
+                <span>🏁</span> Reached Destination
+              </span>
+              <span class="badge-rowcount" style="background: #ecfdf5; color: #059669; border-color: #a7f3d0;" id="count-reached">0</span>
+            </div>
+            <div class="kanban-cards-stack" id="kanban-reached-stack">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+
+          <!-- Col 3: Yet to Arrive / In-Transit -->
+          <div class="kanban-col">
+            <div class="kanban-col-head">
+              <span class="kanban-col-title">
+                <span>⏳</span> Yet to Arrive / In-Transit
+              </span>
+              <span class="badge-rowcount" style="background: #eff6ff; color: #0284c7; border-color: #bae6fd;" id="count-intransit">0</span>
+            </div>
+            <div class="kanban-cards-stack" id="kanban-intransit-stack">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Operational Map & Reallocation Optimization Engine -->
+      <div class="dashboard-grid">
+
+        <!-- Left: Interactive Mapbox Live View -->
+        <div class="map-section glass-panel">
+          <div class="section-head">
+            <div class="section-title">
+              <span>🗺️</span> Regional Transit Map & Dynamic Surge Heatmap
+            </div>
+            <div class="legend-item">
+              <span class="dot-red"></span> Overcrowded Stop &nbsp;
+              <span class="dot-green"></span> 2km Empty Stand (Surplus) &nbsp;
+              <span class="dot-blue"></span> Offering Depots
+            </div>
+          </div>
+
+          <div class="map-container-wrapper">
+            <div id="map-view"></div>
+
+            <div class="map-floating-overlay">
+              <div style="font-weight: 700; color: #fff;">Scenario 1 Focus:</div>
+              <div class="legend-item"><span class="dot-red"></span> Main Bus Stand: 12 buses, 40,000 waiting</div>
+              <div class="legend-item"><span class="dot-green"></span> 2km North Stop: 4 buses idling empty!</div>
+            </div>
+
+            <!-- Instant Opportunity Callout Banner -->
+            <div class="empty-stand-callout" id="callout-empty-stand">
+              <div class="callout-info">
+                <div class="callout-icon">⚡</div>
+                <div>
+                  <div class="callout-title" id="callout-title">Immediate Bottleneck Breaker Found!</div>
+                  <div class="callout-text" id="callout-desc">
+                    4 empty buses waiting at Vilamal Stand (2.1 km away). ETA 8 minutes.
+                  </div>
+                </div>
+              </div>
+              <button class="btn-primary-sm" onclick="approvePriorityZero()">
+                🚀 Dispatch 4 Standby Buses Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: AI Fixed-Fleet Reallocation & Negotiation Hub -->
+        <div class="reallocation-panel glass-panel">
+          <div class="section-head">
+            <div class="section-title">
+              <span>🤖</span> Smart Bus Reallocation & Negotiation Loop
+            </div>
+            <button class="btn-secondary" style="font-size: 0.76rem;" onclick="batchSimulateAll()">
+              ⚡ Run Full Auto-Negotiate Loop
+            </button>
+          </div>
+
+          <div style="padding: 12px 20px; background: rgba(0,0,0,0.25); border-bottom: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+            <span>Deficit: <strong style="color: #f87171;">52 Buses</strong></span>
+            <span>Secured: <strong id="secured-buses-count" style="color: #34d399;">0 / 52</strong></span>
+            <span>Progress: <strong id="negotiation-progress-text">0%</strong></span>
+          </div>
+
+          <div class="reallocation-list" id="reallocation-cards-container">
+            <!-- Dynamic Cards injected via JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Analytics & Trade-off Verification Grid -->
+      <div class="analytics-grid">
+        <div class="chart-card glass-panel">
+          <div class="chart-header">
+            <div class="section-title">
+              <span>📈</span> 15-Minute Crowd Departure Curve vs Capacity
+            </div>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">
+              Red = Demand | Blue = Baseline Fleet | Green = AI Optimized Reallocation
+            </span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="surge-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card glass-panel">
+          <div class="chart-header">
+            <div class="section-title">
+              <span>🧭</span> Origin Feeder Pilgrims Distribution
+            </div>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">
+              Catchment Area Breakdown
+            </span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="feeder-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trade-off Analysis Matrix -->
+      <div class="glass-panel" style="padding: 22px; margin-bottom: 28px;">
+        <div class="section-head" style="padding: 0 0 16px 0;">
+          <div class="section-title">
+            <span>⚖️</span> Fixed-Fleet Reallocation: Trade-Off Analysis Matrix
+          </div>
+          <span style="font-size: 0.82rem; color: #a7f3d0;">
+            Zero net vehicles added — Strict reallocation with service impact accounting
+          </span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="custom-table" id="tradeoff-matrix-table">
+            <thead>
+              <tr>
+                <th>Reallocation ID</th>
+                <th>Donor Depot / Stop</th>
+                <th>Buses Reassigned</th>
+                <th>Donor Route Affected</th>
+                <th>Off-Peak Ridership</th>
+                <th>Headway Impact</th>
+                <th>Devotees Rescued</th>
+                <th>Net Social Justification</th>
+              </tr>
+            </thead>
+            <tbody id="tradeoff-table-body">
+              <!-- Injected via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- =======================================================================
+         VIEW B: COMMUTER / DEVOTEE DASHBOARD (NO LOGIN REQUIRED)
+         ======================================================================= -->
+    <section id="user-view" style="display: none;">
+      
+      <div class="commuter-hero">
+        <h2 id="commuter-hero-title">உலா 360 - தமிழ்நாடு பயணிகள் & திருவிழா பேருந்து வழிகாட்டி</h2>
+        <p id="commuter-hero-desc">
+          Universal Tamil Nadu transit search & festival crowd radar. Search any origin and destination across Tamil Nadu (regular schedules & spare festival fleets with live ETVM seat occupancy).
+        </p>
+      </div>
+
+      <!-- Universal Tamil Nadu Journey Planner with Date, Time & Route Inputs -->
+      <div class="glass-panel" style="padding: 24px; margin-bottom: 24px; border: 1.5px solid var(--accent-cyan);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+          <div class="section-title">
+            <span>🔍</span> Find Available Buses Across Tamil Nadu (எங்கிருந்து எங்கு செல்ல வேண்டும்?)
+          </div>
+          <button class="swap-route-btn" onclick="swapPassengerRoute()" title="Swap origin and destination">
+            <span>⇄</span> Swap From / To
+          </button>
+        </div>
+
+        <div class="search-form-grid-advanced">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>From (புறப்படும் இடம்):</label>
+            <input type="text" class="form-input" id="search-from-input" list="tn-stops-list" placeholder="e.g. Coimbatore, Thiruvarur, Madurai..." value="Thiruvarur Central Municipal Stand">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>To (சேருமிடம்):</label>
+            <input type="text" class="form-input" id="search-to-input" list="tn-stops-list" placeholder="e.g. Kumbakonam, Pollachi, Dindigul..." value="Kumbakonam Central Bus Stand">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>Travel Date (பயண தேதி):</label>
+            <input type="date" class="form-input" id="search-date-input" value="2026-10-19">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>Time Slot (நேரம்):</label>
+            <select class="form-input" id="search-time-select">
+              <option value="all">All Day (முழு நாள்)</option>
+              <option value="Morning">Morning (06:00 - 12:00)</option>
+              <option value="Afternoon">Afternoon (12:00 - 18:00)</option>
+              <option value="Evening" selected>Evening / Night Peak (18:00 - 23:59)</option>
+            </select>
+          </div>
+          <button class="btn-approve" style="height: 44px; padding: 0 24px; white-space: nowrap;" onclick="executePassengerSearch()">
+            <span>🔍</span> Search Buses
+          </button>
+        </div>
+
+        <datalist id="tn-stops-list">
+          <!-- Populated dynamically via JS -->
+        </datalist>
+
+        <!-- Quick Route & Festival Presets -->
+        <div style="display: flex; gap: 10px; margin-top: 16px; align-items: center; flex-wrap: wrap;">
+          <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted);">Quick Suggestions:</span>
+          <button class="btn-table-action" onclick="setQuickSearch('Thiruvarur Central Municipal Stand', 'Kumbakonam Central Bus Stand', '2026-10-19', 'Evening')">
+            🚩 Festival Surge (Thiruvarur ➔ Kumbakonam &bull; Oct 19)
+          </button>
+          <button class="btn-table-action" onclick="setQuickSearch('Madurai Mattuthavani (MIBT)', 'Dindigul Kamarajar Bus Terminal', '2026-10-31', 'Evening')">
+            🚩 Chithirai Surge (Madurai ➔ Dindigul &bull; Oct 31)
+          </button>
+          <button class="btn-table-action" onclick="setQuickSearch('Coimbatore Gandhipuram Central', 'Pollachi Bus Terminal', '2026-10-25', 'all')">
+            🏙️ Normal Town (Coimbatore ➔ Pollachi)
+          </button>
+          <button class="btn-table-action" onclick="setQuickSearch('Salem Meyyanur Central Stand', 'Erode Central Bus Terminal', '2026-10-25', 'all')">
+            🏙️ Regular Corridor (Salem ➔ Erode)
+          </button>
+          <button class="btn-table-action" onclick="setQuickSearch('Chennai Koyambedu (CMBT)', 'Trichy Central Cantt Stand', '2026-10-25', 'all')">
+            🏙️ State Express (Chennai ➔ Trichy)
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Journey Status & Available Fleet Summary Bar -->
+      <div class="journey-summary-bar" id="journey-summary-bar">
+        <div class="journey-summary-route">
+          <span style="font-size: 1.4rem;">🚌</span>
+          <div>
+            <span id="summary-route-text">Thiruvarur Central Municipal Stand ➔ Kumbakonam Central Bus Stand</span>
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;" id="summary-date-text">
+              Date: 19 Oct 2026 &bull; Slot: Evening / Night Peak
+            </div>
+          </div>
+        </div>
+        <div class="journey-summary-badges" id="summary-badges-container">
+          <span class="journey-stat-chip surge" id="summary-surge-chip">🚨 Festival Surge Zone Detected</span>
+          <span class="journey-stat-chip safe" id="summary-spare-chip">🌟 48 Free Seats at Satellite Stand</span>
+          <span class="journey-stat-chip" id="summary-buses-chip">Total 10+ Services Found</span>
+        </div>
+      </div>
+
+      <!-- Search Results Area: Immediately displayed below journey planner -->
+      <div id="passenger-search-results-container">
+
+        <!-- DYNAMIC SECTION 1: CROWDED FESTIVAL CITY SPARE FLEET CALLOUT (Shown ONLY when departing from festival town!) -->
+        <div id="festival-spare-fleet-box" style="display: none; margin-bottom: 24px;">
+          <div class="glass-panel" style="padding: 24px; border: 2px solid #10b981; background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 1.8rem;">🌟</span>
+                <div>
+                  <h3 style="font-size: 1.15rem; color: #059669; font-weight: 800;">
+                    Festival Special Spare Fleet & Shuttles (சிறப்பு உதிரி பேருந்துகள்)
+                  </h3>
+                  <p style="font-size: 0.82rem; color: #047857;" id="spare-fleet-condition-desc">
+                    🚨 Festival Departure Surge Detected. 4-8 reserve standby buses waiting 2km away at Vilamal Outer Bypass Stand with guaranteed vacant seats!
+                  </p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <span class="badge-rowcount" style="background: #059669; color: #ffffff; border-color: #047857; font-size: 0.8rem; padding: 5px 12px;">
+                  ✓ 48 Free Seats Average
+                </span>
+                <span class="badge-rowcount" style="background: #fef3c7; color: #92400e; border-color: #f59e0b; font-size: 0.8rem; padding: 5px 12px;">
+                  💰 கட்டணம்: ₹35
+                </span>
+              </div>
+            </div>
+
+            <div class="bus-cards-grid" id="spare-buses-grid">
+              <!-- Injected dynamically as visual ticket cards -->
+            </div>
+          </div>
+        </div>
+
+        <!-- DYNAMIC SECTION 2: REGULAR SCHEDULED BUSES WITH FARES -->
+        <div class="glass-panel" style="padding: 24px; margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div class="section-title">
+              <span>🚌</span> Regular Scheduled Services & Fares (வழக்கமான அட்டவணை பேருந்துகள் & கட்டணங்கள்)
+            </div>
+            <span style="font-size: 0.8rem; color: var(--text-muted);" id="regular-buses-count-badge">
+              Live ETVM Verified
+            </span>
+          </div>
+
+          <div class="bus-cards-grid" id="regular-buses-grid">
+            <!-- Injected dynamically as visual transit cards -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Live Stop Radar -->
+      <div class="crowd-radar-box">
+        <div class="stop-status-card critical glass-panel">
+          <div class="stop-status-header">
+            <div style="font-weight: 700; font-size: 1.05rem;" id="user-main-stop-title">Main Municipal Bus Stand</div>
+            <span class="badge-live-radar red">CRITICAL JAM (380%)</span>
+          </div>
+          <div style="font-size: 0.82rem; color: #fca5a5; margin-bottom: 6px;">
+            ⚠️ Severe overcrowding. People climbing through windows. Long boarding delay (45+ mins).
+          </div>
+          <div class="crowd-meter-bar">
+            <div class="crowd-meter-fill fill-critical"></div>
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+            <span>Current Waiting: ~38,000 Devotees</span>
+            <span>Buses Available: 12</span>
+          </div>
+        </div>
+
+        <div class="stop-status-card green glass-panel">
+          <div class="stop-status-header">
+            <div style="font-weight: 700; font-size: 1.05rem;" id="user-satellite-stop-title">Outer Bypass Satellite Stand (2km Away)</div>
+            <span class="badge-live-radar green">RECOMMENDED - EMPTY (15%)</span>
+          </div>
+          <div style="font-size: 0.82rem; color: #6ee7b7; margin-bottom: 6px;">
+            ✅ 4 to 8 Special festival buses waiting empty with zero waiting time! Free connecting electric feeder shuttles available.
+          </div>
+          <div class="crowd-meter-bar">
+            <div class="crowd-meter-fill fill-safe"></div>
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+            <span>Current Waiting: ~18 Devotees</span>
+            <span>Buses Waiting: 8 Special Units</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- =======================================================================
+           FLOATING DEVOTEE AI CHATBOT (SMALL BOT ICON AT BOTTOM RIGHT)
+           ======================================================================= -->
+      <div id="floating-chatbot-container" class="floating-chatbot-container">
+        <!-- Floating Bot Trigger Button -->
+        <button id="floating-chatbot-btn" class="floating-chatbot-btn" onclick="toggleFloatingChatbot()" title="உலா வழிகாட்டி / Ask Devotee AI Assistant">
+          <span class="bot-badge-icon">🤖</span>
+          <span class="bot-online-dot"></span>
+          <span class="floating-btn-label">உலா வழிகாட்டி (AI)</span>
+        </button>
+
+        <!-- Floating Chat Popup Window (Initially Hidden, Expands on Click) -->
+        <div id="floating-chatbot-window" class="floating-chatbot-window" style="display: none;">
+          <div class="chatbot-header">
+            <div class="chatbot-header-left">
+              <div class="chatbot-avatar">🤖</div>
+              <div class="chatbot-title-box">
+                <h3 id="chat-title-heading">உலா வழிகாட்டி &bull; Ulaa AI</h3>
+                <p id="chat-subtitle">Voice & Text Transit Radar (தமிழ் / EN)</p>
+              </div>
+            </div>
+            <div class="chatbot-header-controls">
+              <button class="btn-lang-toggle" id="btn-chat-lang" onclick="toggleChatLanguage()" title="Switch between English and Tamil">
+                <span id="chat-lang-text">தமிழ் / EN</span>
+              </button>
+              <button class="btn-clear-chat" onclick="clearChatMessages()" title="Clear Conversation">🗑️</button>
+              <button class="btn-close-chat" onclick="toggleFloatingChatbot()" title="Minimize to icon">✕</button>
+            </div>
+          </div>
+
+          <!-- Predefined Questions Chips Bar -->
+          <div class="chatbot-chips-bar">
+            <span class="chips-label" id="chips-bar-label">⚡ Quick Questions:</span>
+            <div class="chips-scroll-container" id="chat-predefined-chips">
+              <!-- Dynamically rendered in active language (Tamil/English) -->
+            </div>
+          </div>
+
+          <!-- Chat Messages Transcript Box -->
+          <div class="chatbot-messages-box" id="chat-messages-container">
+            <!-- Initial Greeting injected via JS -->
+          </div>
+
+          <!-- Live Voice Listening Status Banner -->
+          <div class="voice-status-banner" id="voice-status-banner">
+            <div class="voice-wave">
+              <div class="voice-wave-bar"></div>
+              <div class="voice-wave-bar"></div>
+              <div class="voice-wave-bar"></div>
+              <div class="voice-wave-bar"></div>
+            </div>
+            <span id="voice-status-text">🎙️ Listening... Speak your transit question now!</span>
+          </div>
+
+          <!-- Chat Input Controls with Voice Mic Button -->
+          <div class="chatbot-input-row">
+            <button class="btn-mic" id="mic-btn" onclick="toggleVoiceRecognition()" title="Click to speak (Web Speech Voice Input)">
+              🎙️
+            </button>
+            <input type="text" class="chat-input-field" id="chat-text-input" placeholder="Ask in English or தமிழில் கேளுங்கள்..." onkeydown="onChatInputKeyDown(event)">
+            <button class="btn-chat-send" id="chat-send-btn" onclick="sendChatbotMessage()">
+              <span>➤</span> Send
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       3. MODAL: TNSTC DIVISIONAL DEPOT CREDENTIALS DIRECTORY
+       ========================================================================= -->
+  <div class="modal-backdrop" id="credentials-modal">
+    <div class="modal-content" style="max-width: 950px;">
+      <div class="modal-header">
+        <h2 class="modal-title">🔑 TNSTC Divisional Depots Directory & Credentials</h2>
+        <button class="modal-close" onclick="closeCredentialsModal()">&times;</button>
+      </div>
+      <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 16px;">
+        All Tamil Nadu State Transport Corporation (TNSTC) Major Divisional Depots across Kumbakonam, Madurai, Coimbatore, Salem, Villupuram, Tirunelveli, MTC Chennai & SETC.
+      </p>
+
+      <div class="table-responsive" style="max-height: 420px; overflow-y: auto;">
+        <table class="custom-table" id="credentials-table">
+          <thead>
+            <tr>
+              <th>Depot ID</th>
+              <th>Depot Name</th>
+              <th>Corporation</th>
+              <th>Region</th>
+              <th>Username</th>
+              <th>Password</th>
+              <th>Contact</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="credentials-tbody">
+            <!-- Injected via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       4. MODAL: REGISTER LOCAL OOR THIRUVIZHA
+       ========================================================================= -->
+  <div class="modal-backdrop" id="add-festival-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">➕ Register Local Oor / Ther Thiruvizha</h2>
+        <button class="modal-close" onclick="closeAddFestivalModal()">&times;</button>
+      </div>
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px;">
+        Depot manager can input custom village/temple festivals. AI automatically schedules demand curves and prepares fixed-fleet reallocations.
+      </p>
+
+      <form id="add-festival-form" onsubmit="submitNewFestival(event)">
+        <div class="form-group">
+          <label>Festival Name (திருவிழா பெயர்):</label>
+          <input type="text" class="form-input" id="new-fest-name" placeholder="e.g. Samayapuram Mariamman Poochorithal" required>
+        </div>
+
+        <div class="form-group">
+          <label>Event Type:</label>
+          <select class="form-input" id="new-fest-type">
+            <option value="Ther Thiruvizha">Ther Thiruvizha (Chariot Car)</option>
+            <option value="Oor Thiruvizha">Oor Thiruvizha (Village Deity Procession)</option>
+            <option value="Theppa Thiruvizha">Theppa Thiruvizha (Float Festival)</option>
+            <option value="Theerthavari Thiruvizha">Theerthavari Thiruvizha</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Destination Transit Bus Stand ID:</label>
+          <input type="text" class="form-input" id="new-fest-dest" value="STOP_TVR_CENTRAL" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label>Programme End Time:</label>
+            <input type="datetime-local" class="form-input" id="new-fest-endtime" required>
+          </div>
+          <div class="form-group">
+            <label>Expected Attendance:</label>
+            <input type="number" class="form-input" id="new-fest-attendance" value="35000" required>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 18px;">
+          <button type="button" class="btn-secondary" onclick="closeAddFestivalModal()">Cancel</button>
+          <button type="submit" class="btn-approve">Register & Calculate Demand</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
 </html>
