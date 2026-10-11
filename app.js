@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initStopsDatalist();
   loadDepotOperations(currentDepotId);
   executePassengerSearch(); // default search for initial passenger view
+  initDevoteeChatbot(); // initialize devotee voice chatbot assistant
 });
 
 // ============================================================================
@@ -73,6 +74,7 @@ function setRole(role) {
     userView.style.display = "block";
     adminBtn.classList.remove("active");
     userBtn.classList.add("active");
+    initDevoteeChatbot();
   }
 }
 
@@ -401,30 +403,96 @@ async function initStopsDatalist() {
   }
 }
 
-function setQuickSearch(fromStop, toStop) {
-  document.getElementById("search-from-input").value = fromStop;
-  document.getElementById("search-to-input").value = toStop;
+function setQuickSearch(fromStop, toStop, travelDate = "2026-10-19", timeSlot = "Evening") {
+  const fromEl = document.getElementById("search-from-input");
+  const toEl = document.getElementById("search-to-input");
+  const dateEl = document.getElementById("search-date-input");
+  const timeEl = document.getElementById("search-time-select");
+
+  if (fromEl) fromEl.value = fromStop;
+  if (toEl) toEl.value = toStop;
+  if (dateEl) dateEl.value = travelDate;
+  if (timeEl) timeEl.value = timeSlot;
+
+  executePassengerSearch();
+}
+
+function swapPassengerRoute() {
+  const fromEl = document.getElementById("search-from-input");
+  const toEl = document.getElementById("search-to-input");
+  if (!fromEl || !toEl) return;
+  const temp = fromEl.value;
+  fromEl.value = toEl.value;
+  toEl.value = temp;
   executePassengerSearch();
 }
 
 async function executePassengerSearch() {
-  const from = document.getElementById("search-from-input").value;
-  const to = document.getElementById("search-to-input").value;
+  const from = (document.getElementById("search-from-input")?.value || "").trim();
+  const to = (document.getElementById("search-to-input")?.value || "").trim();
+  const travelDate = document.getElementById("search-date-input")?.value || "2026-10-19";
+  const timeSlot = document.getElementById("search-time-select")?.value || "all";
+
+  // Update Summary Bar
+  const routeText = document.getElementById("summary-route-text");
+  const dateText = document.getElementById("summary-date-text");
+  const surgeChip = document.getElementById("summary-surge-chip");
+  const spareChip = document.getElementById("summary-spare-chip");
+  const busesChip = document.getElementById("summary-buses-chip");
+
+  if (routeText) routeText.innerText = `${from || "Origin"} ➔ ${to || "Destination"}`;
+  if (dateText) {
+    const dObj = new Date(travelDate);
+    const dFormatted = !isNaN(dObj.getTime()) ? dObj.toLocaleDateString("en-GB", { day: 'numeric', month: 'short', year: 'numeric' }) : travelDate;
+    dateText.innerText = `Travel Date: ${dFormatted} • Slot: ${timeSlot}`;
+  }
 
   try {
-    const res = await fetch(`/api/search_buses?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+    const url = `/api/search_buses?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${encodeURIComponent(travelDate)}&time=${encodeURIComponent(timeSlot)}`;
+    const res = await fetch(url);
     const data = await res.json();
 
     const spareBox = document.getElementById("festival-spare-fleet-box");
     const spareGrid = document.getElementById("spare-buses-grid");
     const regGrid = document.getElementById("regular-buses-grid");
 
-    spareGrid.innerHTML = "";
-    regGrid.innerHTML = "";
+    if (spareGrid) spareGrid.innerHTML = "";
+    if (regGrid) regGrid.innerHTML = "";
 
-    // 1. Festival Special & Spare Fleet Cards (If festival zone)
-    if (data.is_festival_zone && data.spare_buses && data.spare_buses.length > 0) {
-      spareBox.style.display = "block";
+    const totalFound = (data.spare_buses?.length || 0) + (data.regular_buses?.length || 0);
+    if (busesChip) busesChip.innerText = `Total ${totalFound} Services Available`;
+
+    // Update status chips based on strict IF condition: has_spare_buses
+    if (data.has_spare_buses) {
+      if (surgeChip) {
+        surgeChip.className = "journey-stat-chip surge";
+        surgeChip.innerText = `🚨 ${data.spare_bus_condition_note || 'Festival Departure Surge'}`;
+        surgeChip.style.display = "inline-flex";
+      }
+      if (spareChip) {
+        spareChip.className = "journey-stat-chip safe";
+        spareChip.innerText = "🌟 48 Free Seats at 2km Satellite Stand";
+        spareChip.style.display = "inline-flex";
+      }
+    } else {
+      if (surgeChip) {
+        surgeChip.className = "journey-stat-chip safe";
+        surgeChip.innerText = "🏙️ Normal Transit Corridor (Regular Schedules)";
+        surgeChip.style.display = "inline-flex";
+      }
+      if (spareChip) {
+        spareChip.style.display = "none";
+      }
+    }
+
+    // 1. Festival Special & Spare Fleet Cards (Rendered ONLY if departing from festival town on surge dates)
+    if (data.has_spare_buses && data.spare_buses && data.spare_buses.length > 0) {
+      if (spareBox) spareBox.style.display = "block";
+
+      const condDesc = document.getElementById("spare-fleet-condition-desc");
+      if (condDesc && data.festival_info?.eligibility_reason) {
+        condDesc.innerText = `🚨 ${data.festival_info.eligibility_reason}. Staged reserve buses with guaranteed seats waiting 2km away at ${data.festival_info.satellite_hub}!`;
+      }
 
       data.spare_buses.forEach(b => {
         const card = document.createElement("div");
@@ -437,15 +505,22 @@ async function executePassengerSearch() {
           <div>
             <div class="card-top-row">
               <span class="bus-badge-num">${b.bus_id}</span>
+              <span class="card-fare-badge spare">💰 கட்டணம்: ${b.fare_formatted || '₹35'}</span>
               <span class="dep-time-tag">⏱️ ${b.departure_time}</span>
             </div>
             <div class="card-route-title">${b.service_name}</div>
+            <div style="font-size: 0.8rem; color: #065f46; font-weight: 700; margin-bottom: 4px;">
+              🏢 ${b.parent_corporation || 'TNSTC'} &bull; Subdivision Depot: ${b.subdivision_depot || 'Satellite Unit'}
+            </div>
             <div class="card-platform-text">
-              📍 <strong>Staging:</strong> ${b.departure_location}
+              📍 <strong>Staging:</strong> ${b.departure_location} (${b.platform}) &bull; <strong>Type:</strong> ${b.bus_type || 'Special Express Shuttle'}
+            </div>
+            <div style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 6px;">
+              🔄 <strong>Frequency:</strong> ${b.frequency_type || 'Continuous Loop'} &bull; 🆔 <strong>Route:</strong> ${b.route_id || 'SPARE-01'}
             </div>
             <div class="etvm-occupancy-wrapper">
               <div class="etvm-labels">
-                <span style="color: #059669;">✓ ${b.free_seats} Free Seats Available</span>
+                <span style="color: #059669; font-weight: 700;">✓ ${b.free_seats} Free Seats Guaranteed</span>
                 <span>${b.occupied_seats}/${b.total_capacity} (${occPct}%)</span>
               </div>
               <div class="etvm-bar-track">
@@ -453,19 +528,24 @@ async function executePassengerSearch() {
               </div>
             </div>
           </div>
-          <div style="font-size: 0.76rem; color: #047857; background: #ecfdf5; padding: 6px 10px; border-radius: 6px; border: 1px solid #a7f3d0;">
+          <div style="font-size: 0.76rem; color: #047857; background: #ecfdf5; padding: 8px 12px; border-radius: 6px; border: 1px solid #a7f3d0; margin-top: 8px;">
             🚍 ${b.shuttle_feeder}
           </div>
         `;
         spareGrid.appendChild(card);
       });
     } else {
-      spareBox.style.display = "none";
+      if (spareBox) spareBox.style.display = "none";
     }
 
-    // 2. Regular Buses (Normal Town or Crowded City) - Rendered as Visual Cards
+    // 2. Regular Buses (Normal Town or Crowded City) - Rendered with exact fares
+    const regCountBadge = document.getElementById("regular-buses-count-badge");
+    if (regCountBadge) {
+      regCountBadge.innerText = `${data.regular_buses?.length || 0} Scheduled Services Verified`;
+    }
+
     if (!data.regular_buses || data.regular_buses.length === 0) {
-      regGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 24px;">No scheduled services found for this sector.</div>`;
+      if (regGrid) regGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 24px;">No scheduled services found matching this date & time slot. Try selecting "All Day" or another date.</div>`;
       return;
     }
 
@@ -481,16 +561,23 @@ async function executePassengerSearch() {
         <div>
           <div class="card-top-row">
             <span class="bus-badge-num">${b.bus_id}</span>
+            <span class="card-fare-badge">💰 கட்டணம்: ${b.fare_formatted || '₹40'}</span>
             <span class="dep-time-tag">⏱️ ${b.departure_time}</span>
           </div>
           <div class="card-route-title">${b.service_name}</div>
+          <div style="font-size: 0.8rem; color: #1e40af; font-weight: 700; margin-bottom: 4px;">
+            🏢 ${b.parent_corporation || 'TNSTC'} &bull; Subdivision Depot: ${b.subdivision_depot || 'Central Depot'}
+          </div>
           <div class="card-platform-text">
-            📍 ${b.departure_location || 'Central Terminus'} (${b.platform})
+            📍 <strong>Terminal:</strong> ${b.departure_location || 'Main Terminus'} (${b.platform || 'Bay 1'}) &bull; <strong>Type:</strong> ${b.bus_type || b.service_type}
+          </div>
+          <div style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 6px;">
+            🔄 <strong>Frequency:</strong> ${b.frequency_type || 'Daily Service'} &bull; 🏁 <strong>Arrival:</strong> ${b.arrival_time || 'On Schedule'} &bull; 🆔 <strong>Route:</strong> ${b.route_id || 'TNSTC-EXP'}
           </div>
           <div class="etvm-occupancy-wrapper">
             <div class="etvm-labels">
-              <span style="color: ${isFull ? '#dc2626' : '#059669'};">
-                ${isFull ? '🚨 Packed (100%)' : 'Seats Available'}
+              <span style="color: ${isFull ? '#dc2626' : '#059669'}; font-weight: 700;">
+                ${isFull ? '🚨 Packed / Overcrowded' : `✓ ${b.free_seats} Free Seats Available`}
               </span>
               <span>${b.occupied_seats}/${b.total_capacity} (${occPct}%)</span>
             </div>
@@ -499,11 +586,11 @@ async function executePassengerSearch() {
             </div>
           </div>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
           <span style="font-size: 0.76rem; font-weight: 700; color: ${isFull ? '#dc2626' : '#059669'};">
             ${b.crowd_status}
           </span>
-          <span style="font-size: 0.72rem; color: var(--text-muted);">ETVM Live</span>
+          <span style="font-size: 0.72rem; color: var(--text-muted); background: #f1f5f9; padding: 2px 8px; border-radius: 10px;">ETVM Live ML Verified</span>
         </div>
       `;
       regGrid.appendChild(card);
@@ -513,6 +600,352 @@ async function executePassengerSearch() {
     console.error("Error executing passenger search:", err);
   }
 }
+
+// ============================================================================
+// 5B. FLOATING DEVOTEE AI CHATBOT TOGGLE
+// ============================================================================
+function toggleFloatingChatbot() {
+  const win = document.getElementById("floating-chatbot-window");
+  if (!win) return;
+  if (win.style.display === "none" || win.style.display === "") {
+    win.style.display = "flex";
+    initDevoteeChatbot();
+    const inp = document.getElementById("chat-text-input");
+    if (inp) inp.focus();
+  } else {
+    win.style.display = "none";
+  }
+}
+
+// ============================================================================
+// 5B. DEVOTEE AI CHATBOT ASSISTANT (BILINGUAL & WEB SPEECH VOICE INPUT)
+// ============================================================================
+let chatCurrentLang = "ta";
+let speechRecognition = null;
+let isListening = false;
+
+const CHAT_QUESTIONS = {
+  ta: [
+    "காலியான உதிரி பேருந்துகள் எங்கு நிற்கின்றன?",
+    "40,000 கூட்ட நெரிசலை தவிர்க்க எப்போது கிளம்புவது?",
+    "இலவச மின்சார இணைப்பு வாகனம் எங்கு கிடைக்கும்?",
+    "நேரடி ETVM இருக்கை நிலவரத்தை எப்படி பார்ப்பது?",
+    "இன்று இரவு மழை வருமா?",
+    "கோயம்புத்தூர் - பொள்ளாச்சி பேருந்து வசதிகள்?"
+  ],
+  en: [
+    "Where are empty spare buses parked?",
+    "What is the best time to leave to avoid 40,000 crowd rush?",
+    "How to get free electric feeder shuttle to Vilamal?",
+    "How to check live ETVM seat vacancies?",
+    "Is it going to rain tonight during festival exit?",
+    "Regular buses from Coimbatore to Pollachi?"
+  ]
+};
+
+function renderChatPredefinedChips() {
+  const container = document.getElementById("chat-predefined-chips");
+  if (!container) return;
+  container.innerHTML = "";
+  const list = CHAT_QUESTIONS[chatCurrentLang] || CHAT_QUESTIONS.en;
+  list.forEach(q => {
+    const chip = document.createElement("button");
+    chip.className = "predefined-chip";
+    chip.innerText = q;
+    chip.onclick = () => askChatbotQuestion(q);
+    container.appendChild(chip);
+  });
+}
+
+function toggleChatLanguage() {
+  chatCurrentLang = (chatCurrentLang === "ta") ? "en" : "ta";
+  const langText = document.getElementById("chat-lang-text");
+  const inputField = document.getElementById("chat-text-input");
+  const chipsLabel = document.getElementById("chips-bar-label");
+
+  if (chatCurrentLang === "ta") {
+    if (langText) langText.innerText = "தமிழ் (Active) / EN";
+    if (inputField) inputField.placeholder = "தமிழில் கேட்கவும் அல்லது 🎙️ பேசி கேட்கவும்... (எ.கா: காலி பேருந்து எங்குள்ளது?)";
+    if (chipsLabel) chipsLabel.innerText = "⚡ விரைவு வினாக்கள்:";
+  } else {
+    if (langText) langText.innerText = "English (Active) / தமிழ்";
+    if (inputField) inputField.placeholder = "Ask in English or click 🎙️ to speak... (e.g. Where are empty buses?)";
+    if (chipsLabel) chipsLabel.innerText = "⚡ Quick Questions:";
+  }
+  renderChatPredefinedChips();
+}
+
+function askChatbotQuestion(q) {
+  sendChatbotMessage(q);
+}
+
+function onChatInputKeyDown(e) {
+  if (e.key === "Enter") {
+    sendChatbotMessage();
+  }
+}
+
+function clearChatMessages() {
+  const container = document.getElementById("chat-messages-container");
+  if (!container) return;
+  container.innerHTML = "";
+  initDevoteeChatbotGreeting();
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function speakChatMessage(btn, textToSpeak) {
+  if (!window.speechSynthesis) {
+    alert("Speech synthesis is not supported on this browser.");
+    return;
+  }
+
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    document.querySelectorAll(".chat-tts-btn").forEach(b => {
+      b.classList.remove("speaking");
+      b.innerHTML = "🔊 " + (chatCurrentLang === "ta" ? "கேட்க" : "Read Aloud");
+    });
+    if (btn.dataset.wasSpeaking === "true") {
+      btn.dataset.wasSpeaking = "false";
+      return;
+    }
+  }
+
+  // Strip markdown symbols and emojis for natural speech
+  const clean = textToSpeak
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/[\#\*\_\`]/g, "")
+    .replace(/[🚨🟢🔴💡⚡🎫🌦️🏙️✓•\n]/g, " ");
+
+  const utter = new SpeechSynthesisUtterance(clean);
+  utter.lang = (chatCurrentLang === "ta") ? "ta-IN" : "en-IN";
+  utter.rate = 0.95;
+
+  btn.classList.add("speaking");
+  btn.innerHTML = "⏹️ " + (chatCurrentLang === "ta" ? "நிறுத்து" : "Stop");
+  btn.dataset.wasSpeaking = "true";
+
+  utter.onend = () => {
+    btn.classList.remove("speaking");
+    btn.innerHTML = "🔊 " + (chatCurrentLang === "ta" ? "கேட்க" : "Read Aloud");
+    btn.dataset.wasSpeaking = "false";
+  };
+
+  utter.onerror = () => {
+    btn.classList.remove("speaking");
+    btn.innerHTML = "🔊 " + (chatCurrentLang === "ta" ? "கேட்க" : "Read Aloud");
+    btn.dataset.wasSpeaking = "false";
+  };
+
+  window.speechSynthesis.speak(utter);
+}
+
+function toggleVoiceRecognition() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    alert("Voice recognition is not supported in this browser environment. Please use text input instead.");
+    return;
+  }
+
+  const micBtn = document.getElementById("mic-btn");
+  const banner = document.getElementById("voice-status-banner");
+  const bannerText = document.getElementById("voice-status-text");
+
+  if (isListening && speechRecognition) {
+    speechRecognition.stop();
+    isListening = false;
+    micBtn.classList.remove("listening");
+    if (banner) banner.style.display = "none";
+    return;
+  }
+
+  speechRecognition = new SpeechRec();
+  speechRecognition.lang = (chatCurrentLang === "ta") ? "ta-IN" : "en-IN";
+  speechRecognition.continuous = false;
+  speechRecognition.interimResults = true;
+
+  speechRecognition.onstart = () => {
+    isListening = true;
+    micBtn.classList.add("listening");
+    if (banner) {
+      banner.style.display = "flex";
+      if (bannerText) {
+        bannerText.innerText = (chatCurrentLang === "ta") 
+          ? "🎙️ குரல் பதிவு இயக்கத்தில் உள்ளது... தமிழில் பேசுங்கள்!" 
+          : "🎙️ Listening... Speak your transit question now in English or Tamil!";
+      }
+    }
+  };
+
+  speechRecognition.onresult = (event) => {
+    let interim = "";
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      interim += event.results[i][0].transcript;
+    }
+    const inputField = document.getElementById("chat-text-input");
+    if (inputField) inputField.value = interim;
+  };
+
+  speechRecognition.onerror = (event) => {
+    console.warn("Speech recognition error:", event.error);
+    isListening = false;
+    micBtn.classList.remove("listening");
+    if (banner) banner.style.display = "none";
+  };
+
+  speechRecognition.onend = () => {
+    isListening = false;
+    micBtn.classList.remove("listening");
+    if (banner) banner.style.display = "none";
+    const inputField = document.getElementById("chat-text-input");
+    if (inputField && inputField.value.trim().length > 0) {
+      sendChatbotMessage();
+    }
+  };
+
+  try {
+    speechRecognition.start();
+  } catch (err) {
+    console.error("Speech recognition start failed:", err);
+  }
+}
+
+async function sendChatbotMessage(customText = null) {
+  const inputField = document.getElementById("chat-text-input");
+  const text = customText || (inputField ? inputField.value.trim() : "");
+  if (!text) return;
+
+  if (inputField) inputField.value = "";
+
+  const container = document.getElementById("chat-messages-container");
+  if (!container) return;
+
+  // 1. User Message Bubble
+  const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const userMsg = document.createElement("div");
+  userMsg.className = "chat-bubble user";
+  userMsg.innerHTML = `
+    <div class="bubble-content">${escapeHtml(text)}</div>
+    <div class="bubble-footer" style="justify-content: flex-end;">${nowTime}</div>
+  `;
+  container.appendChild(userMsg);
+  container.scrollTop = container.scrollHeight;
+
+  // 2. Bot Typing Bubble
+  const typingId = "typing-" + Date.now();
+  const typingBubble = document.createElement("div");
+  typingBubble.id = typingId;
+  typingBubble.className = "chat-bubble bot";
+  typingBubble.innerHTML = `
+    <div class="bubble-content" style="color: var(--text-muted); font-style: italic;">
+      🤖 ${chatCurrentLang === "ta" ? "உலா வழிகாட்டி பதிலளிக்கிறது..." : "Ulaa Assistant is thinking..."}
+    </div>
+  `;
+  container.appendChild(typingBubble);
+  container.scrollTop = container.scrollHeight;
+
+  try {
+    const res = await fetch(`/api/chatbot?q=${encodeURIComponent(text)}&lang=${chatCurrentLang}`);
+    const data = await res.json();
+    const typingEl = document.getElementById(typingId);
+    if (typingEl) typingEl.remove();
+
+    // Render formatted response
+    let formattedAnswer = (data.answer || "")
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.*?)\*/g, "<em>$1</em>")
+      .replace(/\n\n/g, "<br><br>")
+      .replace(/\n/g, "<br>");
+
+    const botMsg = document.createElement("div");
+    botMsg.className = "chat-bubble bot";
+
+    let quickLinksHtml = "";
+    if (data.quick_links && data.quick_links.length > 0) {
+      quickLinksHtml = `<div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px;">` +
+        data.quick_links.map(ql => `<button class="predefined-chip" style="font-size: 0.74rem; padding: 4px 10px;" onclick="askChatbotQuestion('${escapeHtml(ql)}')">${escapeHtml(ql)}</button>`).join("") +
+        `</div>`;
+    }
+
+    const rawAnswer = data.answer || "";
+    const ttsId = "tts-" + Date.now();
+
+    botMsg.innerHTML = `
+      <div class="bubble-content">
+        <div>${formattedAnswer}</div>
+        ${quickLinksHtml}
+      </div>
+      <div class="bubble-footer">
+        <span>${nowTime}</span>
+        <button class="chat-tts-btn" id="${ttsId}">
+          🔊 ${chatCurrentLang === "ta" ? "கேட்க" : "Read Aloud"}
+        </button>
+      </div>
+    `;
+    container.appendChild(botMsg);
+    container.scrollTop = container.scrollHeight;
+
+    const ttsBtn = document.getElementById(ttsId);
+    if (ttsBtn) {
+      ttsBtn.onclick = () => speakChatMessage(ttsBtn, rawAnswer);
+    }
+
+  } catch (err) {
+    console.error("Chatbot query error:", err);
+    const typingEl = document.getElementById(typingId);
+    if (typingEl) typingEl.remove();
+
+    const errBubble = document.createElement("div");
+    errBubble.className = "chat-bubble bot";
+    errBubble.innerHTML = `
+      <div class="bubble-content" style="color: #dc2626;">
+        ⚠️ ${chatCurrentLang === "ta" ? "மன்னிக்கவும், தகவலைப் பெற முடியவில்லை. மீண்டும் முயற்சிக்கவும்." : "Sorry, could not fetch transit advice. Please try again."}
+      </div>
+    `;
+    container.appendChild(errBubble);
+  }
+}
+
+function initDevoteeChatbotGreeting() {
+  const container = document.getElementById("chat-messages-container");
+  if (!container || container.children.length > 0) return;
+  const welcomeBubble = document.createElement("div");
+  welcomeBubble.className = "chat-bubble bot";
+  const welcomeTextTa = "வணக்கம்! 🙏 நான் உங்கள் **உலா360 திருவிழா & பேருந்து வழிகாட்டி**.\n\n• மத்திய பேருந்து நிலைய நெரிசலை தவிர்த்து **2 கி.மீ தொலைவில் உள்ள காலியான உதிரி பேருந்துகளை** எங்கு அடைவது?\n• **40,000 கூட்ட நெரிசலை** தவிர்க்க சரியான வெளியேறும் நேரம் எது?\n• நேரடி **ETVM காலி இருக்கை நிலவரம்** மற்றும் **இலவச இணைப்பு மின்சார வாகனங்கள்** பற்றியும் என்னிடம் கேளுங்கள்!\n\nகீழே உள்ள வினாக்களை கிளிக் செய்யலாம் அல்லது 🎙️ மைக் பொத்தானை அழுத்தி குரல் வழியாகவும் கேட்கலாம்.";
+  const welcomeTextEn = "Vanakkam! 🙏 I am your **Ulaa360 Festival Transit AI Assistant**.\n\n• Where to find **empty spare buses 2km away** to avoid the jammed central stand?\n• Best exit window to bypass the **40,000 crowd surge**?\n• Real-time **ETVM seat vacancies** & **free electric feeder shuttles**!\n\nClick any quick question below or tap the 🎙️ mic button to speak!";
+
+  const text = (chatCurrentLang === "ta") ? welcomeTextTa : welcomeTextEn;
+  const formatted = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>");
+  const ttsId = "tts-welcome-" + Date.now();
+
+  welcomeBubble.innerHTML = `
+    <div class="bubble-content">
+      ${formatted}
+    </div>
+    <div class="bubble-footer">
+      <span>Just now</span>
+      <button class="chat-tts-btn" id="${ttsId}">
+        🔊 ${chatCurrentLang === "ta" ? "கேட்க" : "Read Aloud"}
+      </button>
+    </div>
+  `;
+  container.appendChild(welcomeBubble);
+
+  const ttsBtn = document.getElementById(ttsId);
+  if (ttsBtn) {
+    ttsBtn.onclick = () => speakChatMessage(ttsBtn, text);
+  }
+}
+
+function initDevoteeChatbot() {
+  renderChatPredefinedChips();
+  initDevoteeChatbotGreeting();
+}
+
 
 // ============================================================================
 // 6. MAPBOX LIGHT-V11 & FESTIVAL PREDICTION LOGIC

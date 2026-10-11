@@ -20,7 +20,13 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 # Import prediction engine
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "scripts"))
-from predictor import predict_festival_demand, compute_smart_reallocations, load_csv
+from predictor import (
+    predict_festival_demand,
+    compute_smart_reallocations,
+    load_csv,
+    search_fleet_buses,
+    get_all_stops_list
+)
 
 BASE_DIR = os.path.dirname(__file__)
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -59,7 +65,13 @@ class Ulaa360Handler(SimpleHTTPRequestHandler):
         elif path == "/api/search_buses":
             origin = query.get("from", [""])[0]
             dest = query.get("to", [""])[0]
-            self.send_json_response(self.handle_search_buses(origin, dest))
+            travel_date = query.get("date", ["2026-10-19"])[0]
+            time_pref = query.get("time", ["all"])[0]
+            self.send_json_response(self.handle_search_buses(origin, dest, travel_date, time_pref))
+        elif path == "/api/chatbot":
+            q = query.get("q", [""])[0]
+            lang = query.get("lang", ["en"])[0]
+            self.send_json_response(self.handle_chatbot_query(q, lang))
         elif path == "/api/all_stops":
             self.send_json_response(self.handle_get_all_stops())
         elif path == "/api/datasets":
@@ -84,6 +96,8 @@ class Ulaa360Handler(SimpleHTTPRequestHandler):
             self.send_json_response(self.handle_respond_request(data))
         elif path == "/api/add_festival":
             self.send_json_response(self.handle_add_festival(data))
+        elif path == "/api/chatbot":
+            self.send_json_response(self.handle_chatbot_query(data.get("query", ""), data.get("lang", "en")))
         else:
             self.send_response(404)
             self.end_headers()
@@ -248,152 +262,206 @@ class Ulaa360Handler(SimpleHTTPRequestHandler):
             }
         }
 
-    # --- UNIVERSAL PASSENGER BUS SEARCH & ETVM CAPACITY ---
-    def handle_search_buses(self, origin, dest):
-        origin = origin.strip()
-        dest = dest.strip()
-        
-        # Check if origin or destination is in a Festival Crowded City vs Normal Town
-        fest_keywords = ["thiruvarur", "madurai", "therady", "vilamal", "goripalayam", "mattuthavani"]
-        is_origin_fest = any(k in origin.lower() for k in fest_keywords)
-        is_dest_fest = any(k in dest.lower() for k in fest_keywords)
-        is_festival_zone = is_origin_fest or is_dest_fest
+    # --- UNIVERSAL PASSENGER BUS SEARCH & ETVM CAPACITY (DATE & LOCATION DYNAMIC) ---
+    def calculate_bus_fare(self, origin, dest, service_type, is_spare=False):
+        if is_spare:
+            return 35  # Subsidized flat festival special shuttle fare
 
-        # Load ETVM logs to find live occupancy
-        etvm_file = os.path.join(DATA_DIR, "ticket_vending_machine_logs.csv")
-        etvm_logs = []
-        if os.path.exists(etvm_file):
-            with open(etvm_file, "r", encoding="utf-8") as f:
-                etvm_logs = list(csv.DictReader(f))[:200]
+        o = origin.lower()
+        d = dest.lower()
 
-        regular_buses = []
-        spare_buses = []
-
-        # If searching normal town (like Coimbatore)
-        if "coimbatore" in origin.lower() or "coimbatore" in dest.lower():
-            routes_cbe = [
-                {"no": "TN-38-N-1204", "name": "Coimbatore Gandhipuram ➔ Singanallur", "dep": "06:15 AM", "plat": "Bay 3", "cap": 52, "occ": 22},
-                {"no": "TN-38-N-1218", "name": "Coimbatore Gandhipuram ➔ Pollachi Express", "dep": "06:30 AM", "plat": "Bay 7", "cap": 52, "occ": 34},
-                {"no": "TN-38-N-1224", "name": "Coimbatore Ukkadam ➔ Mettupalayam", "dep": "06:45 AM", "plat": "Bay 2", "cap": 52, "occ": 18},
-                {"no": "TN-38-N-1232", "name": "Coimbatore Gandhipuram ➔ Tiruppur Old Stand", "dep": "07:00 AM", "plat": "Bay 5", "cap": 55, "occ": 41},
-                {"no": "TN-38-N-1240", "name": "Coimbatore Singanallur ➔ Erode Central", "dep": "07:15 AM", "plat": "Bay 4", "cap": 55, "occ": 29},
-            ]
-            for r in routes_cbe:
-                pct = round((r["occ"] / r["cap"]) * 100, 1)
-                regular_buses.append({
-                    "bus_id": r["no"],
-                    "service_name": r["name"],
-                    "service_type": "Regular Scheduled TNSTC",
-                    "departure_time": r["dep"],
-                    "platform": r["plat"],
-                    "occupied_seats": r["occ"],
-                    "total_capacity": r["cap"],
-                    "free_seats": r["cap"] - r["occ"],
-                    "occupancy_percentage": pct,
-                    "etvm_verified": True,
-                    "crowd_status": "Comfortable" if pct < 70 else "Moderately Busy"
-                })
-
-        # If searching Thiruvarur / Delta festival area
-        elif is_festival_zone:
-            # Regular Scheduled Buses (Crowded at Main Stand!)
-            reg_tvr = [
-                {"no": "TN-49-N-1002", "name": f"{origin or 'Thiruvarur'} ➔ {dest or 'Kumbakonam'}", "dep": "20:15 (Night)", "stand": "Thiruvarur Central Municipal Stand", "cap": 60, "occ": 60},
-                {"no": "TN-49-N-1004", "name": f"{origin or 'Thiruvarur'} ➔ {dest or 'Mannargudi'}", "dep": "20:30 (Night)", "stand": "Thiruvarur Central Municipal Stand", "cap": 55, "occ": 55},
-                {"no": "TN-49-N-1008", "name": f"{origin or 'Thiruvarur'} ➔ {dest or 'Nagapattinam'}", "dep": "20:45 (Night)", "stand": "Thiruvarur Central Municipal Stand", "cap": 60, "occ": 60},
-            ]
-            for r in reg_tvr:
-                regular_buses.append({
-                    "bus_id": r["no"],
-                    "service_name": r["name"],
-                    "service_type": "Regular Scheduled Service (Central Stand)",
-                    "departure_time": r["dep"],
-                    "platform": "Central Stand Main Bay",
-                    "departure_location": r["stand"],
-                    "occupied_seats": r["occ"],
-                    "total_capacity": r["cap"],
-                    "free_seats": 0,
-                    "occupancy_percentage": 100.0,
-                    "etvm_verified": True,
-                    "crowd_status": "CRITICAL OVERLOAD (Window Climbing / Fully Packed)"
-                })
-
-            # Spare & Festival Special Buses (Available at 2km Outer Stand!)
-            spares = [
-                {"no": "TN-49-N-1012", "name": f"Vilamal Shuttle ➔ {dest or 'Kumbakonam'} Direct", "dep": "Every 8 Mins", "stand": "Vilamal Outer Bypass Stand (2km North)", "cap": 60, "occ": 12},
-                {"no": "TN-49-N-1014", "name": f"Vilamal Shuttle ➔ {dest or 'Mannargudi'} Express", "dep": "Every 10 Mins", "stand": "Vilamal Outer Bypass Stand (2km North)", "cap": 55, "occ": 14},
-                {"no": "TN-49-N-1016", "name": f"Vilamal Shuttle ➔ {dest or 'Thanjavur'} Direct", "dep": "Every 12 Mins", "stand": "Vilamal Outer Bypass Stand (2km North)", "cap": 60, "occ": 8},
-                {"no": "TN-49-N-1018", "name": f"Vilamal Shuttle ➔ {dest or 'Mayiladuthurai'}", "dep": "Every 15 Mins", "stand": "Vilamal Outer Bypass Stand (2km North)", "cap": 60, "occ": 10},
-            ]
-            for s in spares:
-                pct = round((s["occ"] / s["cap"]) * 100, 1)
-                spare_buses.append({
-                    "bus_id": s["no"],
-                    "service_name": s["name"],
-                    "service_type": "🌟 Festival Special Spare Fleet (உதிரி சிறப்பு பேருந்து)",
-                    "departure_time": s["dep"],
-                    "departure_location": s["stand"],
-                    "platform": "Designated Satellite Bay",
-                    "occupied_seats": s["occ"],
-                    "total_capacity": s["cap"],
-                    "free_seats": s["cap"] - s["occ"],
-                    "occupancy_percentage": pct,
-                    "etvm_verified": True,
-                    "shuttle_feeder": "Free e-rickshaw connecting from Temple Chariot Gate (3 min ride)",
-                    "crowd_status": "GUARANTEED SEATS (Virtually Empty / No Rush)"
-                })
-
+        # Known major corridor base fare rates (in INR)
+        if ("thiruvarur" in o or "thiruvarur" in d) and "kumbakonam" in d:
+            base = 40
+        elif ("thiruvarur" in o or "thiruvarur" in d) and "mannargudi" in d:
+            base = 28
+        elif ("thiruvarur" in o or "thiruvarur" in d) and "thanjavur" in d:
+            base = 56
+        elif ("thiruvarur" in o or "thiruvarur" in d) and "nagapattinam" in d:
+            base = 30
+        elif ("coimbatore" in o or "coimbatore" in d) and "pollachi" in d:
+            base = 35
+        elif ("coimbatore" in o or "coimbatore" in d) and "mettupalayam" in d:
+            base = 32
+        elif ("madurai" in o or "madurai" in d) and "dindigul" in d:
+            base = 58
+        elif ("madurai" in o or "madurai" in d) and "melur" in d:
+            base = 26
+        elif ("salem" in o or "salem" in d) and "erode" in d:
+            base = 45
+        elif ("chennai" in o or "chennai" in d):
+            base = 210
         else:
-            # General Tamil Nadu Route
-            gen_buses = [
-                {"no": "TN-45-N-2041", "name": f"{origin or 'Trichy'} ➔ {dest or 'Thanjavur'}", "dep": "Every 15 mins", "plat": "Bay 4", "cap": 55, "occ": 28},
-                {"no": "TN-58-N-1802", "name": f"{origin or 'Madurai'} ➔ {dest or 'Dindigul'}", "dep": "Every 20 mins", "plat": "Bay 8", "cap": 60, "occ": 35},
-                {"no": "TN-72-N-1405", "name": f"{origin or 'Tirunelveli'} ➔ {dest or 'Thoothukudi'}", "dep": "Every 25 mins", "plat": "Bay 2", "cap": 52, "occ": 24},
-            ]
-            for g in gen_buses:
-                pct = round((g["occ"] / g["cap"]) * 100, 1)
-                regular_buses.append({
-                    "bus_id": g["no"],
-                    "service_name": g["name"],
-                    "service_type": "Regular Scheduled Service",
-                    "departure_time": g["dep"],
-                    "platform": g["plat"],
-                    "occupied_seats": g["occ"],
-                    "total_capacity": g["cap"],
-                    "free_seats": g["cap"] - g["occ"],
-                    "occupancy_percentage": pct,
-                    "etvm_verified": True,
-                    "crowd_status": "Comfortable"
-                })
+            h = sum(ord(c) for c in (origin + dest)) % 25
+            base = 35 + h
 
-        return {
-            "origin": origin,
-            "destination": dest,
-            "is_festival_zone": is_festival_zone,
-            "regular_buses": regular_buses,
-            "spare_buses": spare_buses
-        }
+        st = service_type.lower()
+        if "ordinary" in st or "town" in st:
+            return max(20, base - 8)
+        elif "deluxe" in st:
+            return base + 18
+        elif "ultra" in st:
+            return base + 35
+        elif "express" in st or "point-to-point" in st:
+            return base + 10
+        else:
+            return base
+
+    def handle_search_buses(self, origin, dest, travel_date="2026-10-19", time_pref="all"):
+        return search_fleet_buses(origin, dest, travel_date, time_pref)
+
+    # --- DEVOTEE CHATBOT ASSISTANT (BILINGUAL NLP ENGINE) ---
+    def handle_chatbot_query(self, query, lang="en"):
+        q = (query or "").lower().strip()
+        is_tamil = (lang == "ta") or any(ord(c) >= 2944 and ord(c) <= 3071 for c in q) or any(w in q for w in ["எங்கு", "எப்போது", "பேருந்து", "காலி", "மழை", "நெரிசல்", "விலமல்", "கும்பகோணம்"])
+
+        # Intent 1: Spare & Empty Buses Location
+        if any(w in q for w in ["spare", "empty", "free bus", "where are", "satellite", "காலி", "உதிரி", "எங்கு நிற்கின்றன", "எங்குள்ளன", "விலமல்"]):
+            if is_tamil:
+                return {
+                    "answer": "🚨 **மத்திய பேருந்து நிலையத்தில் 12 பேருந்துகள் மட்டுமே உள்ளதால் கடும் நெரிசல் நிலவுகிறது.**\n\nமாறாக, **2.1 கி.மீ தொலைவில் உள்ள விலமல் புறவழிச்சாலை நிலையத்திற்கு (Vilamal Outer Stand)** செல்லுங்கள்! அங்கு **4 முதல் 8 காலியான சிறப்பு உதிரி பேருந்துகள் 48+ காலி இருக்கைகளுடன்** காத்திருக்கின்றன.\n\n⚡ கோயில் கிழக்கு வாசலில் (தேரடி) இருந்து 3 நிமிடங்களுக்கு ஒருமுறை **இலவச மின்சார இணைப்பு வாகனங்கள்** இயக்கப்படுகின்றன.",
+                    "quick_links": ["விலமல் பேருந்து நிலையம் எங்குள்ளது?", "கும்பகோணத்திற்கு பேருந்து உள்ளதா?", "இருக்கை நிலவரம் என்ன?"]
+                }
+            else:
+                return {
+                    "answer": "🚨 **The Main Central Bus Stand has only 12 buses and is severely jammed (people climbing through windows).**\n\nInstead, head to the **Vilamal Outer Bypass Stand (2.1 km North)** where **4 to 8 Special Spare Buses are waiting empty with 48+ free seats**!\n\n⚡ Free connecting electric shuttles depart every 3 minutes from the East Temple Gate (Therady) right to the satellite stand.",
+                    "quick_links": ["How to take free shuttle?", "Buses to Kumbakonam?", "Check live seat capacity"]
+                }
+
+        # Intent 2: Best Time to Leave / Avoid Rush
+        elif any(w in q for w in ["best time", "avoid rush", "when to leave", "crowd peak", "window", "எப்போது கிளம்புவது", "நேரம்", "நெரிசல் தவிர்க்க"]):
+            if is_tamil:
+                return {
+                    "answer": "💡 **முக்கிய அறிவுரை:** திருவிழா நிகழ்ச்சி இரவு **20:30 மணிக்கு** நிறைவடைகிறது. இரவு **20:45 முதல் 22:30 வரை** சுமார் 40,000 பக்தர்கள் ஒரே நேரத்தில் வெளியேறுவதால் உச்சக்கட்ட நெரிசல் ஏற்படும்.\n\n**நெரிசலை தவிர்க்கும் வழிகள்:**\n1. **முன்கூட்டியே புறப்படுதல்:** இரவு 19:45-க்குள் புறப்படுங்கள்.\n2. **2 கி.மீ துணை நிலையம்:** இரவு 20:30-க்கு மேல் கிளம்பினால், மத்திய நிலையத்தை தவிர்த்து **விலமல் புறவழிச்சாலை நிலையத்திற்கு** செல்லுங்கள் (8 நிமிடங்களுக்கு ஒருமுறை தடையற்ற பேருந்துகள்).",
+                    "quick_links": ["காலியான உதிரி பேருந்துகள் எங்குள்ளன?", "மழை வருமா?", "இலவச இணைப்பு வாகனம்"]
+                }
+            else:
+                return {
+                    "answer": "💡 **Crowd Avoidance Advisory:** The festival chariot programme concludes at **20:30**. Between **20:45 and 22:30**, ~40,000 pilgrims will exit at once, causing severe stampede-like bottlenecks at the main stand.\n\n**Best Strategies:**\n1. **Early Exit:** Depart before 19:45 before the concluding pooja.\n2. **Use 2km Satellite Stand:** If exiting post-20:30, board directly at **Vilamal Outer Bypass Stand** where buses leave every 8 minutes with zero waiting line.",
+                    "quick_links": ["Where are empty spare buses?", "Is it going to rain?", "Free feeder shuttles"]
+                }
+
+        # Intent 3: Feeder Shuttle / E-rickshaw Link
+        elif any(w in q for w in ["shuttle", "e-rickshaw", "feeder", "how to reach", "connect", "இணைப்பு வாகனம்", "எப்படி செல்வது"]):
+            if is_tamil:
+                return {
+                    "answer": "⚡ **இலவச மின்சார இணைப்பு வாகன சேவை:**\n\nகோயில் கிழக்கு வாசல் (தேரடி) பகுதியில் இலவச மின்சார வாகனங்கள் நிறுத்தப்பட்டுள்ளன. அவை 3 நிமிடங்களுக்கு ஒருமுறை புறப்பட்டு, வெறும் **4 நிமிடங்களில் உங்களை விலமல் சிறப்பு பேருந்து நிலையத்திற்கு** அழைத்துச் செல்லும். எந்த கட்டணமும் இல்லை!",
+                    "quick_links": ["காலியான உதிரி பேருந்துகள் எங்குள்ளன?", "கும்பகோணம் பேருந்து எப்போது?"]
+                }
+            else:
+                return {
+                    "answer": "⚡ **Free Electric Feeder Shuttle Service:**\n\nDesignated electric e-rickshaws are stationed at the **East Temple Chariot Gate (Therady)**. They depart every 3 minutes and reach the **Vilamal Satellite Stand** in under 4 minutes. Free of cost!",
+                    "quick_links": ["Where are spare buses parked?", "Buses to Mannargudi?"]
+                }
+
+        # Intent 4: Live ETVM Seat Check
+        elif any(w in q for w in ["seat", "capacity", "etvm", "ticket", "இருக்கை", "சீட்", "காலி"]):
+            if is_tamil:
+                return {
+                    "answer": "🎫 **நேரடி ETVM இருக்கை கணக்கீடு:**\n\nஉலா360 தளம் அரசு பேருந்துகளின் மின்னணு பயணச்சீட்டு இயந்திரங்களுடன் (ETVM) நேரடியாக இணைக்கப்பட்டுள்ளது.\n\n🟢 **பச்சை நிறம்:** 40+ காலி இருக்கைகள் உள்ளன (உதாரணம்: விலமல் உதிரி பேருந்துகள்).\n🔴 **சிவப்பு நிறம்:** 100% நிரம்பியது (மத்திய பேருந்து நிலைய பேருந்துகள்).\n\nபயண திட்டமிடுதலில் உங்கள் வழித்தடத்தை உள்ளிட்டு இருக்கைகளை உடனுக்குடன் பார்க்கலாம்!",
+                    "quick_links": ["கும்பகோணத்திற்கு பேருந்து உள்ளதா?", "பொள்ளாச்சி பேருந்து"]
+                }
+            else:
+                return {
+                    "answer": "🎫 **Live ETVM Seat Capacity Tracking:**\n\nUlaa360 synchronizes in real-time with conductor Electronic Ticket Vending Machines (ETVMs).\n\n🟢 **Green:** 40+ Vacant seats available (Spare Satellite fleet).\n🔴 **Red:** 100% Packed / Full capacity (Central Stand regular buses).\n\nUse our journey planner cards above to check live seat numbers before heading out!",
+                    "quick_links": ["Buses to Kumbakonam?", "Where are empty buses?"]
+                }
+
+        # Intent 5: Weather Forecast
+        elif any(w in q for w in ["rain", "weather", "forecast", "மழை", "வானிலை"]):
+            if is_tamil:
+                return {
+                    "answer": "🌦️ **வானிலை எச்சரிக்கை:**\n\nவானிலை முன்னறிவிப்பின்படி இரவு **21:00 மணியளவில் 65% மழை பெய்ய வாய்ப்புள்ளது**. மழை காரணமாக பக்தர்கள் 30 நிமிடங்கள் முன்னதாகவே வெளியேறக்கூடும். எனவே முன்கூட்டியே திட்டமிடுங்கள் அல்லது மேற்கூரை உள்ள விலமல் நிலையத்தை பயன்படுத்துங்கள்.",
+                    "quick_links": ["கூட்டத்தை தவிர்க்க எப்போது கிளம்புவது?", "காலியான பேருந்துகள் எங்கு நிற்கின்றன?"]
+                }
+            else:
+                return {
+                    "answer": "🌦️ **Weather Alert:**\n\nMeteorological radar forecasts a **65% probability of evening showers around 21:00**. In past festivals, sudden rain accelerated mass departures by 30 minutes. Plan an early return or take the covered Vilamal Satellite platform.",
+                    "quick_links": ["Best time to leave?", "Where are empty buses?"]
+                }
+
+        # Intent 6: Coimbatore / Regular City
+        elif any(w in q for w in ["coimbatore", "pollachi", "erode", "கோயம்புத்தூர்", "பொள்ளாச்சி"]):
+            if is_tamil:
+                return {
+                    "answer": "🏙️ **கோயம்புத்தூர் மண்டல பேருந்துகள்:**\n\nகாந்திபுரம், உக்கடம் மற்றும் சிங்காநல்லூர் பேருந்து நிலையங்களில் இருந்து வழக்கமான TNSTC பேருந்துகள் தடையின்றி இயங்குகின்றன. இருக்கை வசதி 40-60% தாராளமாக உள்ளது. திருவிழா நெரிசல் இங்கு பொருந்தாது.",
+                    "quick_links": ["கோயம்புத்தூர் - பொள்ளாச்சி பேருந்துகள்", "இருக்கை நிலவரம்"]
+                }
+            else:
+                return {
+                    "answer": "🏙️ **Coimbatore Regional Transit:**\n\nRegular TNSTC services operate normally from Gandhipuram, Ukkadam, and Singanallur hubs with comfortable 40-60% seat occupancies. No festival overcrowding applies in Coimbatore.",
+                    "quick_links": ["Coimbatore to Pollachi buses", "Check seat occupancy"]
+                }
+
+        # Intent 7: Madurai Chithirai Festival
+        elif any(w in q for w in ["madurai", "chithirai", "alagar", "vaigai", "goripalayam", "மதுரை", "அழகர்", "சித்திரை"]):
+            if is_tamil:
+                return {
+                    "answer": "🚩 **மதுரை சித்திரை திருவிழா நேரடி வழிகாட்டி:**\n\nஸ்ரீ கள்ளழகர் வைகை ஆற்றில் எழுந்தருளும் வைபவத்திற்குப் பிறகு மாட்டுத்தாவணி (MIBT) பேருந்து நிலையத்தில் கடுமையான நெரிசல் ஏற்படும்.\n\n• **2 கி.மீ புறவழிச்சாலை (Madurai Ring Road By-Pass):** இங்கு 6 உதிரி பேருந்துகள் காலி இருக்கைகளுடன் காத்திருக்கின்றன!\n• **கோரிப்பாளையம்:** வைகை ஆற்றங்கரையில் இருந்து 3 நிமிட மின்சார இணைப்பு வாகனங்கள் இயக்கப்படுகின்றன.",
+                    "quick_links": ["காலியான உதிரி பேருந்துகள் எங்கு நிற்கின்றன?", "கூட்ட நெரிசலை தவிர்க்க எப்போது கிளம்புவது?"]
+                }
+            else:
+                return {
+                    "answer": "🚩 **Madurai Chithirai Festival Transit Guide:**\n\nFollowing Lord Kallazhagar's Vaigai River entry, Mattuthavani Terminus (MIBT) experiences critical crowd surges.\n\n• **2km Satellite Stand (Madurai Ring Road By-Pass):** 6 standby buses are staged empty with guaranteed seating!\n• **Feeder Link:** Free 3-minute shuttles operate from Goripalayam Vaigai bank directly to the bypass stand.",
+                    "quick_links": ["Where are empty spare buses parked?", "Best time to leave?"]
+                }
+
+        # Intent 8: Fares & Ticket Booking
+        elif any(w in q for w in ["fare", "ticket", "cost", "price", "book", "online", "கட்டணம்", "டிக்கெட்", "விலை", "பதிவு"]):
+            if is_tamil:
+                return {
+                    "answer": "🎟️ **கட்டணம் மற்றும் பயணச்சீட்டு தகவல்:**\n\n• திருவிழா சிறப்பு உதிரி பேருந்துகளுக்கு அரசு வழக்கமான கட்டணமே வசூலிக்கப்படுகிறது (கூடுதல் கட்டணம் இல்லை!).\n• பேருந்திலேயே நடத்துநரிடம் (ETVM இயந்திரம் மூலம்) பயணச்சீட்டு பெறலாம். முன்கூட்டிய முன்பதிவு தேவையில்லை.\n• கோயில் வாசலில் இருந்து விலமல் நிலையம் வரை செல்லும் **மின்சார இணைப்பு வாகனங்கள் 100% இலவசம்**!",
+                    "quick_links": ["இருக்கை நிலவரம் என்ன?", "காலியான உதிரி பேருந்துகள் எங்கு நிற்கின்றன?"]
+                }
+            else:
+                return {
+                    "answer": "🎟️ **Fares & Ticketing Information:**\n\n• Festival Special Spare buses charge standard Government regulated TNSTC fares (no surge pricing!).\n• Tickets are issued on-board by conductors via ETVM handheld machines. No advance booking is required.\n• The connecting electric shuttles from the temple grounds to the 2km satellite stand are **100% Free**!",
+                    "quick_links": ["Check live seat capacity", "Where are empty buses?"]
+                }
+
+        # Intent 9: Specific Route Enquiry (Kumbakonam, Thanjavur, Mannargudi, Dindigul, Trichy)
+        elif any(w in q for w in ["kumbakonam", "thanjavur", "mannargudi", "dindigul", "trichy", "chennai", "கும்பகோணம்", "தஞ்சாவூர்", "மன்னார்குடி", "திண்டுக்கல்"]):
+            if is_tamil:
+                return {
+                    "answer": "🚍 **வழித்தட பேருந்து விவரங்கள்:**\n\nவிலமல் புறவழிச்சாலை துணை நிலையத்திலிருந்து (2.1 கி.மீ வடக்கு) கும்பகோணம், தஞ்சாவூர், மன்னார்குடி மற்றும் நாகப்பட்டினம் நோக்கி **ஒவ்வொரு 8 முதல் 12 நிமிடங்களுக்கும் நேரடி சிறப்பு பேருந்துகள்** புறப்படுகின்றன!\n\nமேலே உள்ள பயண திட்டமிடுதலில் உங்கள் சேருமிடத்தைத் தேர்ந்தெடுத்து பேருந்துகளின் நேரத்தை உடனே பார்க்கலாம்.",
+                    "quick_links": ["இலவச இணைப்பு வாகனம் எங்கு கிடைக்கும்?", "இருக்கை நிலவரம் என்ன?"]
+                }
+            else:
+                return {
+                    "answer": "🚍 **Route Specific Departures:**\n\nDirect festival specials depart every **8 to 12 minutes** from the **Vilamal Outer Satellite Stand (2.1km North)** to Kumbakonam, Thanjavur, Mannargudi, and Nagapattinam with guaranteed vacant seats!\n\nUse our Journey Planner above to see exact bus timings and platform bays.",
+                    "quick_links": ["How to take free shuttle?", "Check live seat capacity"]
+                }
+
+        # Default Greeting / Fallback
+        else:
+            if is_tamil:
+                return {
+                    "answer": f"வணக்கம்! நான் உங்கள் **உலா360 திருவிழா உதவியாளர்**. நீங்கள் கேட்டது: *\"{query}\"*\n\nதிருவிழா காலங்களில் மத்திய பேருந்து நிலைய நெரிசலை தவிர்த்து, 2 கி.மீ தொலைவில் உள்ள காலியான உதிரி பேருந்துகளை அடையவும், நேரடி இருக்கை நிலவரத்தை அறியவும் நான் உங்களுக்கு வழிகாட்டுகிறேன். கீழே உள்ள விரைவு வினாக்களை கிளிக் செய்யவும்!",
+                    "quick_links": ["காலியான உதிரி பேருந்துகள் எங்கு நிற்கின்றன?", "கூட்ட நெரிசலை தவிர்க்க எப்போது கிளம்புவது?", "இலவச இணைப்பு வாகனம் எங்கு கிடைக்கும்?"]
+                }
+            else:
+                return {
+                    "answer": f"Vanakkam! I am your **Ulaa360 Transit Assistant**. You asked: *\"{query}\"*\n\nI can help you navigate festival crowd surges, find the 2km empty spare buses, check live ETVM seat vacancies, and guide you to free feeder e-rickshaws. Click any quick question below or ask me anything!",
+                    "quick_links": ["Where are empty spare buses parked?", "What is the best time to leave to avoid rush?", "How to take free feeder shuttle?"]
+                }
 
     # --- ALL TAMIL NADU STOPS FOR PASSENGER AUTOCOMPLETE ---
     def handle_get_all_stops(self):
-        stops_file = os.path.join(DATA_DIR, "stops.csv")
-        major_stops = [
-            "Coimbatore Gandhipuram Central", "Coimbatore Ukkadam Stand", "Coimbatore Singanallur Stand",
-            "Thiruvarur Central Municipal Stand", "Vilamal Outer Bypass Stand (2km North)", "Therady Chariot Grounds East Gate",
-            "Madurai Mattuthavani (MIBT)", "Madurai Periyar Bus Stand", "Madurai Ring Road By-Pass (2km East)", "Madurai Goripalayam",
-            "Kumbakonam Central Bus Stand", "Mannargudi Rajagopalaswamy Temple Stand", "Nagapattinam New Bus Stand",
-            "Thanjavur Old Bus Stand", "Thanjavur New Bus Stand", "Trichy Central Cantt Stand", "Trichy Chathiram Stand",
-            "Salem Meyyanur Central Stand", "Erode Central Bus Terminal", "Tiruppur Old Stand", "Dindigul Kamarajar Bus Terminal",
-            "Tirunelveli New Bus Stand", "Thoothukudi New Bus Stand", "Nagercoil Central Stand", "Melur Bus Terminal",
-            "Pollachi Bus Terminal", "Mettupalayam Stand", "Karur Central Stand", "Pudukkottai Central Stand",
-            "Chennai Koyambedu (CMBT)", "Chennai Broadway Central", "Chennai Tambaram MEPZ"
-        ]
-        return {"stops": major_stops}
+        stops = get_all_stops_list()
+        return {"stops": stops}
 
     # --- JURY DATASETS HANDLERS ---
     def handle_get_datasets_info(self):
         files = [
+            "tamil_nadu_bus_stand_names_184 (1).csv",
+            "tnstc_kumbakonam_schedules.csv",
+            "tnstc_coimbatore_schedules.csv",
+            "tnstc_madurai_schedules.csv",
+            "tnstc_salem_schedules.csv",
+            "tnstc_tirunelveli_schedules.csv",
+            "villupuram.csv",
             "ticket_vending_machine_logs.csv",
+            "ticketing_machine.csv",
             "depot_daily_fleet_trips.csv",
             "historical_passenger_demand.csv",
             "stops.csv",

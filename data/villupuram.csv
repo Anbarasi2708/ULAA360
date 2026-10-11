@@ -1,0 +1,51 @@
+Parent_Corporation,Regional_Division,Subdivision_Depot,Bus_Registration_Number,Bus_Type,Route_ID,Origin_Bus_Stand,Destination_Bus_Stand,Departure_Time,Arrival_Time,Frequency_Type
+TNSTC Villupuram,Villupuram,Kallakurichi Depot,TN-16-N-2453,Town Bus (Ordinary),VPM-101,Villupuram Bus Stand,Cuddalore Old BS,06:45,09:15,Weekends
+TNSTC Villupuram,Tiruvannamalai,Polur Depot,TN-25-N-8658,Mofussil (Express),VPM-102,Tiruvannamalai Central,Pondicherry New BS,09:30,11:30,Every 20 Mins
+TNSTC Villupuram,Kancheepuram,Kanchi South Depot,TN-21-N-6644,Ultra Deluxe,VPM-103,Kancheepuram BS,Chennai CMBT,14:00,16:45,Every 20 Mins
+TNSTC Villupuram,Cuddalore,Chidambaram Depot,TN-31-N-2041,Point-to-Point Deluxe,VPM-104,Cuddalore Old BS,Trichy Central,16:00,20:45,Every 30 Mins
+TNSTC Villupuram,Vellore,Tirupattur Depot,TN-23-N-5014,Mofussil (Express),VPM-105,Vellore New BS,Tambaram MEZ,07:30,10:30,Peak Hours Only
+TNSTC Villupuram,Tiruvannamalai,Cheyyar Depot,TN-25-N-8761,Mofussil (Express),VPM-106,Tiruvannamalai Central,Salem Central,23:45,03:30,Every 30 Mins
+TNSTC Villupuram,Villupuram,Ulundurpet Depot,TN-16-N-1845,Point-to-Point Deluxe,VPM-107,Villupuram Bus Stand,Vellore New BS,05:00,09:15,Weekends
+TNSTC Villupuram,Villupuram,Ulundurpet Depot,TN-16-N-3714,Mofussil (Express),VPM-108,Villupuram Bus Stand,Tiruvannamalai Central,18:30,20:15,Daily
+TNSTC Villupuram,Villupuram,Villupuram Central,TN-16-N-9538,Ultra Deluxe,VPM-109,Villupuram Bus Stand,Kancheepuram BS,12:00,14:30,Every 20 Mins
+TNSTC Villupuram,Tiruvannamalai,Polur Depot,TN-25-N-4421,Mofussil (Express),VPM-110,Tiruvannamalai Central,Kancheepuram BS,11:15,13:15,Every 20 Mins
+TNSTC Villupuram,Tiruvannamalai,Arani Depot,TN-25-N-1068,Mofussil (Express),VPM-111,Tiruvannamalai Central,Tambaram MEZ,17:15,21:00,Peak Hours Only
+TNSTC Villupuram,Villupuram,Kallakurichi Depot,TN-16-N-3870,Point-to-Point Deluxe,VPM-112,Villupuram Bus Stand,Cuddalore Old BS,21:45,23:15,Peak Hours Only
+TNSTC Villupuram,Villupuram,Ulundurpet Depot,TN-16-N-5867,Town Bus (Ordinary),VPM-113,Villupuram Bus Stand,Tambaram MEZ,20:45,00:00,Every 20 Mins
+TNSTC Villupuram,Cuddalore,Vridhachalam Depot,TN-31-N-1072,Mofussil (Express),VPM-114,Cuddalore Old BS,Kancheepuram BS,23:30,03:15,Every 20 Mins
+TNSTC Villupuram,Kancheepuram,Chengalpattu Depot,TN-21-N-1701,Town Bus (Ordinary),VPM-115,Kancheepuram BS,Vellore New BS,21:30,23:45,Weekends
+TNSTC Villupuram,Tiruvannamalai,Tiruvannamalai Rural,TN-25-N-6331,Mofussil (Express),VPM-116,Tiruvannamalai Central,Cuddalore Old BS,09:45,13:00,Every 20 Mins
+TNSTC Villupuram,Cuddalore,Chidambaram Depot,TN-31-N-7649,Town Bus (Ordinary),VPM-117,Cuddalore Old BS,Kancheepuram BS,18:00,21:30,Peak Hours Only
+TNSTC Villupuram,Tiruvannamalai,Polur Depot,TN-25-N-9571,Ultra Deluxe,VPM-118,Tiruvannamalai Central,Vellore New BS,20:00,22:15,Every 20 Mins
+TNSTC Villupuram,Kancheepuram,Kanchi North Depot,TN-21-N-2441,Ultra Deluxe,VPM-119,Kancheepuram BS,Chennai CMBT,07:30,09:00,Weekends
+TNSTC Villupuram,Vellore,Vellore-2 Depot,TN-23-N-5047,Ultra Deluxe,VPM-120,Vellore New BS,Tiruvannamalai Central,12:45,14:45,Every 20 Mins
+TNSTC Villupuram,Villupuram,Ulundurpet Depot,TN-16-N-7253,Mofussil (Express),VPM-121,Villupuram Bus Stand,Pondicherry New BS,08:30,10:00,Weekends
+TNSTC Villupuram,Cuddalore,Vridhachalam Depot,TN-31-N-3814,Ultra Deluxe,VPM-122,Cuddalore Old BS,Tiruvannamalai Central,15:30,19:15,Daily
+TNSTC Villupuram,Kancheepuram,Kanchi North Depot,TN-21-N-9635,Town Bus (Ordinary),VPM-123,Kancheepuram BS,Pondicherry New BS,11:45,14:30,Peak Hours Only
+TNSTC Villupuram,Vellore,Vellore-1 Depot,TN-23-N-9685,Ultra Deluxe,VPM-124,Vellore New BS,Chennai CMBT,18:15,21:30,Every 30 Mins
+TNSTC Villupuram,Kancheepuram,Chengalpattu Depot,TN-21-N-8511,Town Bus (Ordinary),VPM-125,Kancheepuram BS,Pondicherry New BS,08:15,11:30,Every 30 Mins
+TNSTC Villupuram,Vellore,Vellore-2 Depot,TN-23-N-5627,Town Bus (Ordinary),VPM-126,Vellore New BS,Pondicherry New BS,20:15,23:15,Every 20 Mins
+TNSTC Villupuram,Tiruvannamalai,Arani Depot,TN-25-N-3913,Point-to-Point Deluxe,VPM-127,Tiruvannamalai Central,Tambaram MEZ,06:30,09:45,Daily
+TNSTC Villupuram,Kancheepuram,Kanchi South Depot,TN-21-N-5636,Mofussil (Express),VPM-128,Kancheepuram BS,Cuddalore Old BS,21:15,00:30,Weekends
+TNSTC Villupuram,Tiruvannamalai,Cheyyar Depot,TN-25-N-7779,Mofussil (Express),VPM-129,Tiruvannamalai Central,Vellore New BS,22:15,23:45,Weekends
+TNSTC Villupuram,Villupuram,Kallakurichi Depot,TN-16-N-2443,Point-to-Point Deluxe,VPM-130,Villupuram Bus Stand,Vellore New BS,08:45,12:00,Every 20 Mins
+TNSTC Villupuram,Cuddalore,Panruti Depot,TN-31-N-7945,Town Bus (Ordinary),VPM-131,Cuddalore Old BS,Vellore New BS,09:45,13:45,Peak Hours Only
+TNSTC Villupuram,Kancheepuram,Tambaram Depot,TN-21-N-4916,Point-to-Point Deluxe,VPM-132,Kancheepuram BS,Pondicherry New BS,12:45,15:00,Weekends
+TNSTC Villupuram,Villupuram,Tindivanam Depot,TN-16-N-7033,Ultra Deluxe,VPM-133,Villupuram Bus Stand,Trichy Central,11:30,15:15,Daily
+TNSTC Villupuram,Cuddalore,Vridhachalam Depot,TN-31-N-3532,Town Bus (Ordinary),VPM-134,Cuddalore Old BS,Kancheepuram BS,06:45,10:30,Every 20 Mins
+TNSTC Villupuram,Kancheepuram,Tambaram Depot,TN-21-N-5047,Mofussil (Express),VPM-135,Kancheepuram BS,Villupuram Bus Stand,07:00,09:15,Every 20 Mins
+TNSTC Villupuram,Tiruvannamalai,Arani Depot,TN-25-N-6644,Town Bus (Ordinary),VPM-136,Tiruvannamalai Central,Villupuram Bus Stand,22:45,00:30,Daily
+TNSTC Villupuram,Vellore,Vellore-2 Depot,TN-23-N-4148,Ultra Deluxe,VPM-137,Vellore New BS,Cuddalore Old BS,09:30,13:45,Weekends
+TNSTC Villupuram,Tiruvannamalai,Arani Depot,TN-25-N-4841,Mofussil (Express),VPM-138,Tiruvannamalai Central,Villupuram Bus Stand,21:45,23:15,Peak Hours Only
+TNSTC Villupuram,Tiruvannamalai,Tiruvannamalai Rural,TN-25-N-5122,Point-to-Point Deluxe,VPM-139,Tiruvannamalai Central,Pondicherry New BS,09:15,11:45,Peak Hours Only
+TNSTC Villupuram,Kancheepuram,Chengalpattu Depot,TN-21-N-7256,Ultra Deluxe,VPM-140,Kancheepuram BS,Villupuram Bus Stand,22:45,00:45,Peak Hours Only
+TNSTC Villupuram,Vellore,Vellore-1 Depot,TN-23-N-7065,Mofussil (Express),VPM-141,Vellore New BS,Kancheepuram BS,18:30,20:35,Every 30 Mins
+TNSTC Villupuram,Cuddalore,Chidambaram Depot,TN-31-N-2440,Town Bus (Ordinary),VPM-142,Cuddalore Old BS,Trichy Central,09:45,13:30,Every 20 Mins
+TNSTC Villupuram,Tiruvannamalai,Cheyyar Depot,TN-25-N-9538,Mofussil (Express),VPM-143,Tiruvannamalai Central,Trichy Central,16:15,20:15,Daily
+TNSTC Villupuram,Villupuram,Ulundurpet Depot,TN-16-N-2443,Point-to-Point Deluxe,VPM-144,Villupuram Bus Stand,Kancheepuram BS,12:00,14:45,Peak Hours Only
+TNSTC Villupuram,Cuddalore,Chidambaram Depot,TN-31-N-1294,Mofussil (Express),VPM-145,Cuddalore Old BS,Pondicherry New BS,08:30,09:45,Every 20 Mins
+TNSTC Villupuram,Kancheepuram,Kanchi North Depot,TN-21-N-1068,Mofussil (Express),VPM-146,Kancheepuram BS,Trichy Central,23:15,03:15,Weekends
+TNSTC Villupuram,Cuddalore,Panruti Depot,TN-31-N-5014,Mofussil (Express),VPM-147,Cuddalore Old BS,Trichy Central,14:45,18:45,Every 20 Mins
+TNSTC Villupuram,Kancheepuram,Tambaram Depot,TN-21-N-1132,Town Bus (Ordinary),VPM-148,Kancheepuram BS,Villupuram Bus Stand,18:45,21:00,Every 30 Mins
+TNSTC Villupuram,Cuddalore,Chidambaram Depot,TN-31-N-3714,Mofussil (Express),VPM-149,Cuddalore Old BS,Chennai CMBT,18:15,22:15,Every 20 Mins
+TNSTC Villupuram,Tiruvannamalai,Arani Depot,TN-25-N-4916,Point-to-Point Deluxe,VPM-150,Tiruvannamalai Central,Chennai CMBT,15:45,19:45,Weekends
