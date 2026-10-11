@@ -16,3 +16,7 @@ venv/
 # OS generated
 .DS_Store
 Thumbs.db
+
+# Dependencies & temporary folders
+node_modules/
+ulaa360/

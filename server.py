@@ -32,7 +32,7 @@ BASE_DIR = os.path.dirname(__file__)
 DATA_DIR = os.path.join(BASE_DIR, "data")
 PUBLIC_DIR = BASE_DIR
 
-PORT = 8080
+PORT = int(os.environ.get("PORT", 8080))
 
 class Ulaa360Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
